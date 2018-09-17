@@ -9,19 +9,14 @@ class LayerTerrain extends React.PureComponent {
     points: []
   }
 
-  renderTerrain(){
-
-  }
-
   componentDidMount(){
- 
-      this.setState({
-        points: getLineCoords()
-      })
+    this.setState({
+      points: getLineCoords()
+    })
   }
 
   render() {
-    return <Line points={this.state.points} stroke="#567d46" fill="#402905" closed={true} tension={0.5} strokeWidth={10} />
+    return <Line ref={node => this.node = node} points={this.state.points} stroke="#567d46" fill="#402905" closed={true} tension={0.5} strokeWidth={10} />
   }
 }
 
