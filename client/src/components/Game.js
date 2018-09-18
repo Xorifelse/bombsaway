@@ -24,6 +24,14 @@ class Game extends React.PureComponent {
     }
   }
 
+  componentDidUpdate() {
+    const player = this.props.game.players.find(p => p.userId === this.props.userId)
+
+    const winner = this.props.game.players
+      .filter(p => p.symbol === this.props.game.winner)
+      .map(p => p.userId)[0]
+  }
+
   joinGame = () => this.props.joinGame(this.props.game.id)
 
   render() {
@@ -33,12 +41,6 @@ class Game extends React.PureComponent {
     if (!authenticated) return (
 			<Redirect to="/login" />
     )
-    
-    const player = game.players.find(p => p.userId === userId)
-
-    const winner = game.players
-      .filter(p => p.symbol === game.winner)
-      .map(p => p.userId)[0]
 
     return (
       <Stage width={CANVAS_WIDTH} height={CANVAS_HEIGHT}>
