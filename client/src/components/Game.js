@@ -1,6 +1,10 @@
 import * as React from 'react'
 import {connect} from 'react-redux'
 import { Stage, Layer } from 'react-konva';
+import {Redirect} from 'react-router-dom'
+import {getGames, joinGame, updateGame} from '../actions/games'
+import {getUsers} from '../actions/users'
+import {userId} from '../jwt'
 
 import {
   CANVAS_HEIGHT,
@@ -13,7 +17,29 @@ import LayerTerrain from './LayerTerrain';
 
 class Game extends React.PureComponent {
 
+  componentWillMount() {
+    if (this.props.authenticated) {
+      if (this.props.game === null) this.props.getGames()
+      if (this.props.users === null) this.props.getUsers()
+    }
+  }
+
+  joinGame = () => this.props.joinGame(this.props.game.id)
+
   render() {
+
+    const {game, users, authenticated, userId} = this.props
+
+    if (!authenticated) return (
+			<Redirect to="/login" />
+    )
+    
+    const player = game.players.find(p => p.userId === userId)
+
+    const winner = game.players
+      .filter(p => p.symbol === game.winner)
+      .map(p => p.userId)[0]
+
     return (
       <Stage width={CANVAS_WIDTH} height={CANVAS_HEIGHT}>
         <Layer>
@@ -30,4 +56,15 @@ class Game extends React.PureComponent {
   }
 }
 
-export default connect((store) => ({store}), {})(Game)
+const mapStateToProps = (state, props) => ({
+  authenticated: state.currentUser !== null,
+  userId: state.currentUser && userId(state.currentUser.jwt),
+  game: state.games && state.games[props.match.params.id],
+  users: state.users
+})
+
+const mapDispatchToProps = {
+  getGames, getUsers, joinGame, updateGame
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Game)
