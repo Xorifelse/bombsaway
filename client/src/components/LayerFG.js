@@ -1,16 +1,28 @@
 import * as React from 'react'
 import {connect} from 'react-redux'
-import {Rect} from 'react-konva'
-
 import {
+  Rect,
+  Circle,
   Group,
-  Text
-} from 'react-konva';
+  Text,
+  Line
+} from 'react-konva'
 
 import {
   CANVAS_HEIGHT,
   CANVAS_WIDTH
 } from '../lib/canvas'
+
+import {
+  ROTATION_SPEED,
+  TANK_SIZE,
+  TANK_BARREL_SIZE,
+  TANK_BARREL_WIDTH,
+  polarProjectionX,
+  polarProjectionY,
+  calcDegrees
+} from '../lib/constants'
+
 
 const KB_CODES = [
   // defines what keyboard codes to listen to
@@ -22,34 +34,37 @@ const KB_CODES = [
   40, // down
 ]
 
+
+function Tank({x, y, degrees, color}){
+  return (
+    <Group>
+      <Circle x={x} y={y} radius={TANK_SIZE} fill={color}/>
+      <Line points={[x, y, polarProjectionX(x, TANK_BARREL_SIZE, degrees), polarProjectionY(y, TANK_BARREL_SIZE, degrees)]} strokeWidth={TANK_BARREL_WIDTH} stroke={color} />
+    </Group>
+  )
+}
+
 class LayerFG extends React.PureComponent {
   state = {
     keysCycle: [],
     keys: [],
-    force: 0
-
+    force: 0,
+    degrees: 0
   }
 
   
   keysUpdate(keyCode){
     switch(keyCode){
       case 32: // space
-        this.setState({
-          force: this.state.force + 1
-        })
-        break
+        return this.setState({force: this.state.force + 1})
       case 37: // left
-        console.log('left is hold')
-        break
+        return this.setState({degrees: this.state.degrees - 1 < 0 ? 359 : this.state.degrees - 1})
       case 38: // up
-        console.log('up is hold')
-        break
+        return this.setState({degrees: calcDegrees(this.state.degrees, 5)})
       case 39: // right
-        console.log('right is hold')
-        break
+        return this.setState({degrees: this.state.degrees + 1 > 360 ? 1 : this.state.degrees + 1})
       case 40: // down
-        console.log('down is hold')
-        break
+        return this.setState({degrees: calcDegrees(this.state.degrees, -5)})
     }
   }
 
@@ -79,7 +94,6 @@ class LayerFG extends React.PureComponent {
       if(code === keyCode){
         if(!this.state.keys[keyCode]){
           // create timer for keycode that stops on key released
-          console.log('create timer')
           this.state.keys[keyCode] = true
           this.state.keysCycle[keyCode] = setInterval(() => this.keysUpdate(keyCode), 25)
         }
@@ -110,6 +124,10 @@ class LayerFG extends React.PureComponent {
       <Group>
         <Rect x={0} y={0} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} fill="rgba(0,0,0,0.0)" />
         <Text x={10} y={10} text={"Force: " + this.state.force} />
+        <Text x={10} y={20} text={"Degrees: " + this.state.degrees} />
+        <Tank x={500} y={500} degrees={this.state.degrees} color="#fff" />
+        {/*Tank(500, 500, this.state.degrees, "#fff" )*/}
+
       </Group> 
       
     )
