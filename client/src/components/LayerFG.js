@@ -24,7 +24,7 @@ import {
   deg2rad
 } from '../lib/constants'
 
-import {hasPressed, hasReleased} from '../actions/games'
+import {hasPressed, hasReleased, hasFired, switchFired} from '../actions/games'
 
 
 const KB_CODES = [
@@ -54,7 +54,8 @@ class LayerFG extends React.PureComponent {
     keys: [],
     force: 0,
     degrees: 270,
-    color: '#fff'
+    color: '#fff',
+    locked: false
   }
 
 
@@ -100,6 +101,7 @@ class LayerFG extends React.PureComponent {
         // check collision with ground
         if(this.props.game.settings.heightMap[Math.round(x)] <= y){
          clearInterval(update)
+         this.state.locked = false
         }
 
         projectileX = x
@@ -114,6 +116,7 @@ class LayerFG extends React.PureComponent {
         
         if (y > CANVAS_HEIGHT || x < 0 || x > CANVAS_WIDTH) {
           clearInterval(update)
+          this.state.locked = false
         }
       }, 20 )
     }.bind(this))
@@ -156,6 +159,7 @@ class LayerFG extends React.PureComponent {
           // Fire event
           if(keyCode === 32){
             console.log(`Fire with force of ${this.state.force}`)
+            this.props.hasFired(this.props.game.id, this.state.degrees, this.state.force)
             this.fireProjectile(500, 500,this.state.force, this.state.degrees)
             this.setState({force: 0})
           }
@@ -198,12 +202,21 @@ class LayerFG extends React.PureComponent {
     // Get player pos from socket
 
   }
+  
 
   componentDidUpdate() {
     if (this.props.game.keyPressed !== 32 && this.props.game.keyReleased === false) {
       this.onKeyDown({ keyCode: this.props.game.keyPressed })
     } else if (this.props.game.keyPressed !== 32 && this.props.game.keyReleased === true) {
       this.onKeyUp({ keyCode: this.props.game.keyPressed })
+    }
+    console.log(this.props.game.hasFired)
+    if (this.props.game.hasFired === true && this.state.locked === false) {
+      this.state.locked = true
+      this.props.switchFired(this.props.game.id)
+      
+      this.fireProjectile(500, 500,this.props.game.force, this.props.game.degrees)
+      
     }
   }
 
@@ -228,7 +241,7 @@ const mapStateToProps = (state, props) => ({
 })
 
 const mapDispatchToProps = {
-  hasPressed, hasReleased
+  hasPressed, hasReleased, hasFired, switchFired
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LayerFG)

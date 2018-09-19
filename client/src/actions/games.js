@@ -9,6 +9,8 @@ export const UPDATE_GAMES = 'UPDATE_GAMES'
 export const JOIN_GAME_SUCCESS = 'JOIN_GAME_SUCCESS'
 export const UPDATE_GAME_SUCCESS = 'UPDATE_GAME_SUCCESS'
 export const KEY_PRESSED = 'KEY_PRESSED'
+export const HAS_FIRED = 'HAS_FIRED' 
+export const SWITCH_FIRED = 'SWITCH_FIRED'
 
 const updateGames = games => ({
   type: UPDATE_GAMES,
@@ -96,7 +98,7 @@ export const hasPressed = (gameId, key) => (dispatch, getState) => {
     .catch(err => console.error(err))
 }
 
-export const hasReleased = (gameId, key, degrees, force) => (dispatch, getState) => {
+export const hasReleased = (gameId, key) => (dispatch, getState) => {
   const state = getState()
   const jwt = state.currentUser.jwt
 
@@ -105,6 +107,26 @@ export const hasReleased = (gameId, key, degrees, force) => (dispatch, getState)
   request
     .patch(`${baseUrl}/games/${gameId}/pressed`)
     .set('Authorization', `Bearer ${jwt}`)
-    .send({ key, keyReleased: true , degrees, force})
+    .send({ key, keyReleased: true})
     .catch(err => console.error(err))
 }
+
+export const hasFired = (gameId, degrees, force) => (dispatch, getState) => {
+  const state = getState()
+  const jwt = state.currentUser.jwt
+
+  if (isExpired(jwt)) return dispatch(logout())
+
+  request
+    .patch(`${baseUrl}/games/${gameId}/fired`)
+    .set('Authorization', `Bearer ${jwt}`)
+    .send({ degrees, force})
+    .catch(err => console.error(err))
+}
+
+export const switchFired = (gameId) => ({ 
+  type: SWITCH_FIRED,
+  payload: {
+    gameId
+  }
+})

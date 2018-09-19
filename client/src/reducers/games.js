@@ -1,4 +1,4 @@
-import {ADD_GAME, UPDATE_GAME, UPDATE_GAMES, KEY_PRESSED} from '../actions/games'
+import {ADD_GAME, UPDATE_GAME, UPDATE_GAMES, KEY_PRESSED, HAS_FIRED, SWITCH_FIRED} from '../actions/games'
 import {USER_LOGOUT} from '../actions/users'
 
 /*
@@ -35,6 +35,26 @@ export default (state = null, {type, payload}) => {
           {...state[payload.id], 
             keyPressed: payload.keyPressed, 
             keyReleased: payload.keyReleased
+          }
+      }
+
+      case HAS_FIRED:
+      return {
+        ...state,
+        [payload.id]: 
+          {...state[payload.id], 
+            degrees: payload.degrees,
+            force: payload.force,
+            hasFired: payload.hasFired
+          }
+      }
+
+      case SWITCH_FIRED:
+      return {
+        ...state,
+        [payload.gameId]: 
+          {...state[payload.gameId], 
+            hasFired: false
           }
       }
 
