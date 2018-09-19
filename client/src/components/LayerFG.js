@@ -46,12 +46,58 @@ function Tank({x, y, degrees, color}){
 
 class LayerFG extends React.PureComponent {
   state = {
+    trajectorys: [],
     keysCycle: [],
     keys: [],
     force: 0,
     degrees: 0
   }
 
+
+  updateProjectile(){
+
+  }
+
+  fireProjectile(x, y, force, degrees){
+    var projectileX = x + polarProjectionX(x, TANK_BARREL_SIZE, degrees)
+    var projectileY = y + polarProjectionY(y, TANK_BARREL_SIZE, degrees)
+    var xVel = force/2;
+    var yVel = -force/2;
+    var g = 1;
+
+    let line = [x,y]
+
+    this.setState({
+      trajectorys: [...this.state.trajectorys, line ]
+    }, function (){
+      let trajectorys = this.state.trajectorys
+      let index = this.state.trajectorys.length - 1
+      let line = this.state.trajectorys[index]
+
+      let update = setInterval(() => {
+        x += xVel
+        y += yVel
+        yVel += g
+        projectileX = x
+        projectileY = y
+
+        line.push(projectileX, projectileY)
+        trajectorys[index] = line
+
+        this.setState({
+          trajectorys: [...trajectorys]
+        })
+
+        this.render()
+
+        console.log(projectileX, projectileY)
+        
+        if (y > CANVAS_HEIGHT || x < 0 || x > CANVAS_WIDTH) {
+          clearInterval(update)
+        }
+      }, 20 )
+    }.bind(this))
+  }
   
   keysUpdate(keyCode){
     switch(keyCode){
@@ -80,6 +126,7 @@ class LayerFG extends React.PureComponent {
           // Fire event
           if(keyCode === 32){
             console.log(`Fire with force of ${this.state.force}`)
+            this.fireProjectile(500, 500,this.state.force, this.state.degrees)
             this.setState({force: 0})
           }
         }
@@ -126,10 +173,12 @@ class LayerFG extends React.PureComponent {
         <Text x={10} y={10} text={"Force: " + this.state.force} />
         <Text x={10} y={20} text={"Degrees: " + this.state.degrees} />
         <Tank x={500} y={500} degrees={this.state.degrees} color="#fff" />
-        {/*Tank(500, 500, this.state.degrees, "#fff" )*/}
-
-      </Group> 
-      
+        {
+          this.state.trajectorys.map(line => {
+            return <Line points={line} stroke="red" strokeWidth={1} opacity={.5} />
+          })
+        }
+      </Group>       
     )
   }
 }
