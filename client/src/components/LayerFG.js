@@ -160,7 +160,7 @@ class LayerFG extends React.PureComponent {
           if(keyCode === 32){
             console.log(`Fire with force of ${this.state.force}`)
             this.props.hasFired(this.props.game.id, this.state.degrees, this.state.force)
-            this.fireProjectile(500, 500,this.state.force, this.state.degrees)
+            this.fireProjectile(this.props.x, this.props.y, this.state.force, this.state.degrees)
             this.setState({force: 0})
           }
         }
@@ -191,10 +191,10 @@ class LayerFG extends React.PureComponent {
   }
 
   componentDidMount(){  
-    if (this.props.player.symbol === this.props.game.turn) {
+    //if (this.props.player.symbol === this.props.game.turn) {
       window.addEventListener('keydown', this.onKeyDown)
       window.addEventListener('keyup', this.onKeyUp)
-    } 
+    //} 
 
     // Add keys to state, no update
     KB_CODES.map(code => this.state.keys[code] = false)
@@ -215,9 +215,9 @@ class LayerFG extends React.PureComponent {
       this.state.locked = true
       this.props.switchFired(this.props.game.id)
       
-      this.fireProjectile(500, 500,this.props.game.force, this.props.game.degrees)
+      this.fireProjectile(this.props.x, this.props.y, this.props.game.force, this.props.game.degrees)
       
-    }
+    } 
   }
 
   render() {
