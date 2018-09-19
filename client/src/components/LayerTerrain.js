@@ -17,7 +17,7 @@ class LayerTerrain extends React.PureComponent {
 
   componentDidMount(){
     this.setState({
-      points: getLineCoords()
+      points: getLineCoords(this.props.game.settings.canvasWidth, this.props.game.settings.canvasHeight, this.props.game.settings.heightMap)
     })
   }
 
@@ -26,4 +26,8 @@ class LayerTerrain extends React.PureComponent {
   }
 }
 
-export default connect((store) => ({store}), {})(LayerTerrain)
+const mapStateToProps = (state, props) => ({
+  
+})
+
+export default connect(mapStateToProps, {})(LayerTerrain)

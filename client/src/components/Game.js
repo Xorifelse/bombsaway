@@ -5,6 +5,7 @@ import {Redirect} from 'react-router-dom'
 import {getGames, joinGame, updateGame} from '../actions/games'
 import {getUsers} from '../actions/users'
 import {userId} from '../jwt'
+import './games/GameDetails.css'
 
 import {
   CANVAS_HEIGHT,
@@ -25,11 +26,7 @@ class Game extends React.PureComponent {
   }
 
   componentDidUpdate() {
-    const player = this.props.game.players.find(p => p.userId === this.props.userId)
 
-    const winner = this.props.game.players
-      .filter(p => p.symbol === this.props.game.winner)
-      .map(p => p.userId)[0]
   }
 
   joinGame = () => this.props.joinGame(this.props.game.id)
@@ -42,18 +39,57 @@ class Game extends React.PureComponent {
 			<Redirect to="/login" />
     )
 
+    if (game === null || users === null) return 'Loading...'
+    if (!game) return 'Not found'
+
+    const player = game.players.find(p => p.userId === userId)
+
+    const winner = game.players
+      .filter(p => p.symbol === game.winner)
+      .map(p => p.userId)[0]
+
     return (
-      <Stage width={CANVAS_WIDTH} height={CANVAS_HEIGHT}>
-        <Layer>
-          <LayerBG />
-        </Layer>
-        <Layer>
-          <LayerTerrain />
-        </Layer>
-        <Layer>
-          <LayerFG />
-        </Layer>
-      </Stage>
+      <div>
+        <h1>Game #{game.id}</h1>
+
+        <p>Status: {game.status}</p>
+
+        {
+          game.status === 'started' &&
+          player && player.symbol === game.turn &&
+          <div>It's your turn!</div>
+        }
+
+        {
+          game.status === 'pending' &&
+          game.players.map(p => p.userId).indexOf(userId) === -1 &&
+          <button onClick={this.joinGame}>Join Game</button>
+        }
+
+        {
+          winner &&
+          <p>Winner: {users[winner].firstName}</p>
+        }
+
+        <hr />
+
+        {
+          game.status !== 'pending' &&
+          <Stage width={CANVAS_WIDTH} height={CANVAS_HEIGHT}>
+          <Layer>
+            <LayerBG />
+          </Layer>
+          <Layer>
+            <LayerTerrain game={game}/>
+          </Layer>
+          <Layer>
+            <LayerFG />
+          </Layer>
+        </Stage>
+        }
+
+      </div>
+
     )
   }
 }

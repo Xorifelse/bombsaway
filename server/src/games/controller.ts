@@ -8,6 +8,8 @@ import {IsBoard, isValidTransition, calculateWinner, finished} from './logic'
 import { Validate } from 'class-validator'
 import {io} from '../index'
 
+import {genHeightmap, CANVAS_HEIGHT, CANVAS_WIDTH} from '../lib/canvas'
+
 class GameUpdate {
 
   @Validate(IsBoard, {
@@ -25,10 +27,19 @@ export default class GameController {
   async createGame(
     @CurrentUser() user: User
   ) {
-    const entity = await Game.create().save()
+    const entity = await Game.create()
+
+    const settings = {
+      canvasWidth: CANVAS_WIDTH,
+      canvasHeight: CANVAS_HEIGHT,
+      heightMap: genHeightmap(CANVAS_WIDTH, CANVAS_HEIGHT)
+    }
+
+    entity.settings = settings
+    const savedEntity = await entity.save()
 
     await Player.create({
-      game: entity, 
+      game: savedEntity, 
       user,
       symbol: 'x'
     }).save()
