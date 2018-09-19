@@ -1,4 +1,4 @@
-import {ADD_GAME, UPDATE_GAME, UPDATE_GAMES} from '../actions/games'
+import {ADD_GAME, UPDATE_GAME, UPDATE_GAMES, KEY_PRESSED} from '../actions/games'
 import {USER_LOGOUT} from '../actions/users'
 
 /*
@@ -27,6 +27,16 @@ export default (state = null, {type, payload}) => {
         games[game.id] = game
         return games
       }, {})
+    
+    case KEY_PRESSED:
+      return {
+        ...state,
+        [payload.id]: 
+          {...state[payload.id], 
+            keyPressed: payload.keyPressed, 
+            keyReleased: payload.keyReleased
+          }
+      }
 
     default:
       return state
