@@ -92,8 +92,11 @@ class Game extends React.PureComponent {
             <LayerTerrain game={game}/>
           </Layer>
           <Layer>
-            <LayerFG game={game} player='x' color="#f00" x={x[0]} y={y[0]} />
-            <LayerFG game={game} player='o' color="#00f" x={x[1]} y={y[1]} />
+            {
+              game.settings.tanks.map((obj, i) => {
+                return <LayerFG game={game} player={i} color={obj.c} x={obj.x} y={obj.y} />
+              })
+            }
           </Layer>
         </Stage>
         }
