@@ -8,11 +8,15 @@ export const TERRAIN_DIRT_COLOR = '#402905'
 
 // System constants
 export const DEG2RAD = Math.PI/180
+export const RAD2DEG = 180/Math.PI
 
 
 
 export const polarProjectionX = (x, distance, degrees) => x + distance * Math.cos(degrees * DEG2RAD)
 export const polarProjectionY = (y, distance, degrees) => y + distance * Math.sin(degrees * DEG2RAD)
+export const rad2deg = (radian) => radian * RAD2DEG
+export const deg2rad = (degrees) => degrees * DEG2RAD
+
 export const calcDegrees = (degrees, num) => {
   if(num === 0) return degrees
 

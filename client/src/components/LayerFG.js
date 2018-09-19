@@ -20,7 +20,8 @@ import {
   TANK_BARREL_WIDTH,
   polarProjectionX,
   polarProjectionY,
-  calcDegrees
+  calcDegrees,
+  deg2rad
 } from '../lib/constants'
 
 
@@ -50,7 +51,8 @@ class LayerFG extends React.PureComponent {
     keysCycle: [],
     keys: [],
     force: 0,
-    degrees: 0
+    degrees: 270,
+    color: '#fff'
   }
 
 
@@ -59,11 +61,17 @@ class LayerFG extends React.PureComponent {
   }
 
   fireProjectile(x, y, force, degrees){
-    var projectileX = x + polarProjectionX(x, TANK_BARREL_SIZE, degrees)
-    var projectileY = y + polarProjectionY(y, TANK_BARREL_SIZE, degrees)
-    var xVel = force/2;
-    var yVel = -force/2;
-    var g = 1;
+    x = polarProjectionX(x, TANK_BARREL_SIZE, degrees)
+    y = polarProjectionY(y, TANK_BARREL_SIZE, degrees)
+
+    let rad = deg2rad(degrees)
+    let projectileX = x
+    let projectileY = y
+    let xVel = force/2;
+    let yVel = -force/2;
+    let g = 1;
+
+
 
     let line = [x,y]
 
@@ -75,9 +83,23 @@ class LayerFG extends React.PureComponent {
       let line = this.state.trajectorys[index]
 
       let update = setInterval(() => {
-        x += xVel
-        y += yVel
+        if(degrees >= 0 && degrees <= 180){
+          // down, disabled
+          clearInterval(update)
+          //x += xVel * Math.cos(rad)
+          //y += yVel * Math.sin(rad) 
+        } else {
+          // up
+          x += xVel * Math.cos(rad)
+          y -= yVel * Math.sin(rad) 
+        }
         yVel += g
+
+        // check collision with ground
+        //if(this.props.store.games.settings.heightMap[Math.round(x)] == y){
+        //  clearInterval(update)
+        //}
+
         projectileX = x
         projectileY = y
 
@@ -87,10 +109,6 @@ class LayerFG extends React.PureComponent {
         this.setState({
           trajectorys: [...trajectorys]
         })
-
-        this.render()
-
-        console.log(projectileX, projectileY)
         
         if (y > CANVAS_HEIGHT || x < 0 || x > CANVAS_WIDTH) {
           clearInterval(update)
@@ -104,12 +122,20 @@ class LayerFG extends React.PureComponent {
       case 32: // space
         return this.setState({force: this.state.force + 1})
       case 37: // left
+        // counter clock
+        if(this.state.degrees === 181) return
         return this.setState({degrees: this.state.degrees - 1 < 0 ? 359 : this.state.degrees - 1})
       case 38: // up
+        // clockwise
+        if(calcDegrees(this.state.degrees, 5) > 0 && calcDegrees(this.state.degrees, 5) < 180) return
         return this.setState({degrees: calcDegrees(this.state.degrees, 5)})
       case 39: // right
+        // clockwise
+        if(this.state.degrees === 359) return
         return this.setState({degrees: this.state.degrees + 1 > 360 ? 1 : this.state.degrees + 1})
       case 40: // down
+        // counter clock
+        if(this.state.degrees -5 <= 181) return
         return this.setState({degrees: calcDegrees(this.state.degrees, -5)})
     }
   }
@@ -172,10 +198,10 @@ class LayerFG extends React.PureComponent {
         <Rect x={0} y={0} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} fill="rgba(0,0,0,0.0)" />
         <Text x={10} y={10} text={"Force: " + this.state.force} />
         <Text x={10} y={20} text={"Degrees: " + this.state.degrees} />
-        <Tank x={500} y={500} degrees={this.state.degrees} color="#fff" />
+        <Tank x={500} y={500} degrees={this.state.degrees} color={this.state.color} />
         {
           this.state.trajectorys.map(line => {
-            return <Line points={line} stroke="red" strokeWidth={1} opacity={.5} />
+            return <Line points={line} stroke={this.state.color} strokeWidth={1} opacity={.5} />
           })
         }
       </Group>       
@@ -183,4 +209,7 @@ class LayerFG extends React.PureComponent {
   }
 }
 
-export default connect((store) => ({store}), {})(LayerFG)
+const mapStateToProps = (state, props) => ({
+})
+
+export default connect(mapStateToProps, {})(LayerFG)
