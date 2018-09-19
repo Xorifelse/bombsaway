@@ -35,11 +35,11 @@ export const genHeightmap = (maxW, maxY) => {
 	return normWave(wave, maxW/2, getRndInt(50, 200))
 }
 
-export const getLineCoords = (maxW = CANVAS_WIDTH, maxH = CANVAS_HEIGHT) => {
+export const getLineCoords = (maxW = CANVAS_WIDTH, maxH = CANVAS_HEIGHT, reduxHeightmap) => {
 	// Heigtmap only generates Y hights from minX to maxX
 	// For line drawing to work, it needs to be boxed and needs a X coord
 
-	let hm = genHeightmap(maxW, maxH).reduce((acc, y, x) => acc.push(x, y) && acc, [])
+	let hm = reduxHeightmap.reduce((acc, y, x) => acc.push(x, y) && acc, [])
 
   hm.unshift(-50, hm[1])     // start drawing outside of canvas
 	hm.push(
