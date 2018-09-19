@@ -199,12 +199,12 @@ class LayerFG extends React.PureComponent {
   }
 
   componentDidUpdate() {
-    // if (this.props.game.keyPressed) {
-    //   // this.state.keysCycle[this.props.game.keyPressed] = setInterval(() => this.keysUpdate(keyCode), 25)
-    //   this.onKeyDown({ keyCode: this.props.game.keyPressed })
-    // } else {
-    //   this.onKeyUp({ keyCode: this.props.game.keyPressed })
-    // }
+    if (this.props.game.keyPressed !== 32 && this.props.game.keyReleased === false) {
+      // this.state.keysCycle[this.props.game.keyPressed] = setInterval(() => this.keysUpdate(keyCode), 25)
+      this.onKeyDown({ keyCode: this.props.game.keyPressed })
+    } else {
+      this.onKeyUp({ keyCode: this.props.game.keyPressed })
+    }
   }
 
   render() {
