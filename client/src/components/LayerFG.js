@@ -217,7 +217,7 @@ class LayerFG extends React.PureComponent {
       
       this.fireProjectile(this.props.x, this.props.y, this.props.game.force, this.props.game.degrees)
       
-    }
+    } 
   }
 
   render() {
