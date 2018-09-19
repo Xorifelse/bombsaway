@@ -54,7 +54,7 @@ class LayerFG extends React.PureComponent {
     keys: [],
     force: 0,
     degrees: 270,
-    color: '#fff'
+    color: this.props.color
   }
 
 
@@ -208,15 +208,16 @@ class LayerFG extends React.PureComponent {
   }
 
   render() {
+    console.log(this.props.color)
     return (
       <Group>
         <Rect x={0} y={0} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} fill="rgba(0,0,0,0.0)" />
         <Text x={10} y={10} text={"Force: " + this.state.force} />
         <Text x={10} y={20} text={"Degrees: " + this.state.degrees} />
-        <Tank x={500} y={500} degrees={this.state.degrees} color={this.state.color} />
+        <Tank x={this.props.x} y={this.props.y} degrees={this.state.degrees} color={this.props.color} />
         {
           this.state.trajectorys.map(line => {
-            return <Line points={line} stroke={this.state.color} strokeWidth={1} opacity={.5} />
+            return <Line points={line} stroke={this.props.color} strokeWidth={1} opacity={.5} />
           })
         }
       </Group>       
