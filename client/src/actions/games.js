@@ -8,6 +8,7 @@ export const UPDATE_GAME = 'UPDATE_GAME'
 export const UPDATE_GAMES = 'UPDATE_GAMES'
 export const JOIN_GAME_SUCCESS = 'JOIN_GAME_SUCCESS'
 export const UPDATE_GAME_SUCCESS = 'UPDATE_GAME_SUCCESS'
+export const KEY_PRESSED = 'KEY_PRESSED'
 
 const updateGames = games => ({
   type: UPDATE_GAMES,
@@ -79,5 +80,31 @@ export const updateGame = (gameId, board) => (dispatch, getState) => {
     .set('Authorization', `Bearer ${jwt}`)
     .send({ board })
     .then(_ => dispatch(updateGameSuccess()))
+    .catch(err => console.error(err))
+}
+
+export const hasPressed = (gameId, key) => (dispatch, getState) => {
+  const state = getState()
+  const jwt = state.currentUser.jwt
+
+  if (isExpired(jwt)) return dispatch(logout())
+
+  request
+    .patch(`${baseUrl}/games/${gameId}/pressed`)
+    .set('Authorization', `Bearer ${jwt}`)
+    .send({ key })
+    .catch(err => console.error(err))
+}
+
+export const hasReleased = (gameId) => (dispatch, getState) => {
+  const state = getState()
+  const jwt = state.currentUser.jwt
+
+  if (isExpired(jwt)) return dispatch(logout())
+
+  request
+    .patch(`${baseUrl}/games/${gameId}/pressed`)
+    .set('Authorization', `Bearer ${jwt}`)
+    .send({ keyReleased: true })
     .catch(err => console.error(err))
 }
