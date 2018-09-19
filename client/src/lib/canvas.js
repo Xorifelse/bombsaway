@@ -1,7 +1,7 @@
 export const CANVAS_HEIGHT = 700
 export const CANVAS_WIDTH = 1400
 
-const getRndInt = (min, max) => Math.floor(Math.random() * (max+1 - min) + min)
+export const getRndInt = (min, max) => Math.floor(Math.random() * (max+1 - min) + min)
 const genRndInt = (i) => Math.floor(Math.random()*i)+1 // return random int with low bound of 1
 
 

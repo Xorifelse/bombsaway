@@ -9,7 +9,8 @@ import './games/GameDetails.css'
 
 import {
   CANVAS_HEIGHT,
-  CANVAS_WIDTH
+  CANVAS_WIDTH,
+  getRndInt
 } from '../lib/canvas'
 
 import LayerBG from './LayerBG';
@@ -48,6 +49,14 @@ class Game extends React.PureComponent {
       .filter(p => p.symbol === game.winner)
       .map(p => p.userId)[0]
 
+    // layer settings for each tank
+    const x = []
+    const y = []
+    x[0] = Math.round(getRndInt(10, game.settings.canvasWidth / 2))
+    y[0] = game.settings.heightMap[x[0]]
+    x[1] = Math.round(getRndInt(game.settings.canvasWidth / 2, game.settings.canvasWidth - 10))
+    y[1] = game.settings.heightMap[x[1]]
+
     return (
       <div>
         <h1>Game #{game.id}</h1>
@@ -83,7 +92,11 @@ class Game extends React.PureComponent {
             <LayerTerrain game={game}/>
           </Layer>
           <Layer>
-            <LayerFG game={game} player={player} />
+            {
+              game.settings.tanks.map((obj, i) => {
+                return <LayerFG game={game} player={i} color={obj.c} x={obj.x} y={obj.y} />
+              })
+            }
           </Layer>
         </Stage>
         }

@@ -8,7 +8,15 @@ import { Game, Player } from './entities'
 // import { Validate } from 'class-validator'
 import {io} from '../index'
 
-import {genHeightmap, CANVAS_HEIGHT, CANVAS_WIDTH} from '../lib/canvas'
+import {genHeightmap} from '../lib/canvas'
+
+import {
+  CANVAS_HEIGHT,
+  CANVAS_WIDTH,
+  PLAYER_COUNT,
+  PLAYER_COLORS,
+  PLAYER_START_X
+} from '../lib/constants'
 
 // class GameUpdate {
 
@@ -17,6 +25,12 @@ import {genHeightmap, CANVAS_HEIGHT, CANVAS_WIDTH} from '../lib/canvas'
 //   })
 //   board: Board
 // }
+
+interface tankstype{
+  x,
+  y,
+  c
+}
 
 @JsonController()
 export default class GameController {
@@ -29,10 +43,23 @@ export default class GameController {
   ) {
     const entity = await Game.create()
 
+    const tanks: tankstype[] = []
+    const heightMap = genHeightmap(CANVAS_WIDTH, CANVAS_HEIGHT)
+
+    for(let i = 0; i < PLAYER_COUNT; i++){
+      let x = Math.round(PLAYER_START_X[i])
+      let y = heightMap[Math.round(x)]
+      console.log(heightMap[x])
+      let c = PLAYER_COLORS[i]
+
+      tanks.push({x, y, c})
+    }
+
     const settings = {
       canvasWidth: CANVAS_WIDTH,
       canvasHeight: CANVAS_HEIGHT,
-      heightMap: genHeightmap(CANVAS_WIDTH, CANVAS_HEIGHT)
+      tanks,
+      heightMap,
     }
 
     entity.settings = settings
