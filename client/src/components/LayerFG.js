@@ -24,6 +24,8 @@ import {
   deg2rad
 } from '../lib/constants'
 
+import {hasPressed, hasReleased} from '../actions/games'
+
 
 const KB_CODES = [
   // defines what keyboard codes to listen to
@@ -96,9 +98,9 @@ class LayerFG extends React.PureComponent {
         yVel += g
 
         // check collision with ground
-        //if(this.props.store.games.settings.heightMap[Math.round(x)] == y){
-        //  clearInterval(update)
-        //}
+        if(this.props.game.settings.heightMap[Math.round(x)] <= y){
+         clearInterval(update)
+        }
 
         projectileX = x
         projectileY = y
@@ -146,6 +148,7 @@ class LayerFG extends React.PureComponent {
     KB_CODES.forEach(code => {
       if(code === keyCode){
         if(this.state.keys[keyCode]){
+          this.props.hasReleased(this.props.game.id, keyCode)
           this.state.keys[keyCode] = false
           clearInterval(this.state.keysCycle[keyCode])
 
@@ -167,6 +170,7 @@ class LayerFG extends React.PureComponent {
       if(code === keyCode){
         if(!this.state.keys[keyCode]){
           // create timer for keycode that stops on key released
+          this.props.hasPressed(this.props.game.id, keyCode)
           this.state.keys[keyCode] = true
           this.state.keysCycle[keyCode] = setInterval(() => this.keysUpdate(keyCode), 25)
         }
@@ -182,14 +186,25 @@ class LayerFG extends React.PureComponent {
   }
 
   componentDidMount(){  
-    window.addEventListener('keydown', this.onKeyDown)
-    window.addEventListener('keyup', this.onKeyUp)
+    if (this.props.player.symbol === this.props.game.turn) {
+      window.addEventListener('keydown', this.onKeyDown)
+      window.addEventListener('keyup', this.onKeyUp)
+    } 
 
     // Add keys to state, no update
     KB_CODES.map(code => this.state.keys[code] = false)
 
     // Get player pos from socket
 
+  }
+
+  componentDidUpdate() {
+    // if (this.props.game.keyPressed) {
+    //   // this.state.keysCycle[this.props.game.keyPressed] = setInterval(() => this.keysUpdate(keyCode), 25)
+    //   this.onKeyDown({ keyCode: this.props.game.keyPressed })
+    // } else {
+    //   this.onKeyUp({ keyCode: this.props.game.keyPressed })
+    // }
   }
 
   render() {
@@ -212,4 +227,8 @@ class LayerFG extends React.PureComponent {
 const mapStateToProps = (state, props) => ({
 })
 
-export default connect(mapStateToProps, {})(LayerFG)
+const mapDispatchToProps = {
+  hasPressed, hasReleased
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LayerFG)
