@@ -83,7 +83,7 @@ class Game extends React.PureComponent {
             <LayerTerrain game={game}/>
           </Layer>
           <Layer>
-            <LayerFG />
+            <LayerFG game={game} />
           </Layer>
         </Stage>
         }
