@@ -158,7 +158,7 @@ export default class GameController {
   Player has pressed key > send messages to clients - these react on this and start they're animation
   */
 
-//  @Authorized()
+ @Authorized()
  // the reason that we're using patch here is because this request is not idempotent
  // http://restcookbook.com/HTTP%20Methods/idempotency/
  // try to fire the same requests twice, see what happens
@@ -168,14 +168,6 @@ export default class GameController {
    @Param('id') gameId: number,
    @Body() update: any
  ) {
-  //  const game = await Game.findOneById(gameId)
-  //  if (!game) throw new NotFoundError(`Game does not exist`)
-
-  //  const player = await Player.findOne({ user, game })
-
-  //  if (!player) throw new ForbiddenError(`You are not part of this game`)
-  //  if (game.status !== 'started') throw new BadRequestError(`The game is not started yet`)
-  //  if (player.symbol !== game.turn) throw new BadRequestError(`It's not your turn`)
 
   if (update.keyReleased && update.keyReleased === true) {
     io.emit('action', {
@@ -201,6 +193,30 @@ export default class GameController {
 
    return update
   }
+
+  @Authorized()
+  // the reason that we're using patch here is because this request is not idempotent
+  // http://restcookbook.com/HTTP%20Methods/idempotency/
+  // try to fire the same requests twice, see what happens
+  @Patch('/games/:id([0-9]+)/fired')
+  async hasFired(
+   //  @CurrentUser() user: User,
+    @Param('id') gameId: number,
+    @Body() update: any
+  ) {
+ 
+     io.emit('action', {
+       type: 'HAS_FIRED',
+       payload: { 
+         degrees: update.degrees,
+         force: update.force,
+         id: gameId,
+         hasFired: true
+       }
+     })
+ 
+    return update
+   }
 
 
 
