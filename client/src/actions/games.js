@@ -96,7 +96,7 @@ export const hasPressed = (gameId, key) => (dispatch, getState) => {
     .catch(err => console.error(err))
 }
 
-export const hasReleased = (gameId) => (dispatch, getState) => {
+export const hasReleased = (gameId, key) => (dispatch, getState) => {
   const state = getState()
   const jwt = state.currentUser.jwt
 
@@ -105,6 +105,6 @@ export const hasReleased = (gameId) => (dispatch, getState) => {
   request
     .patch(`${baseUrl}/games/${gameId}/pressed`)
     .set('Authorization', `Bearer ${jwt}`)
-    .send({ keyReleased: true })
+    .send({ key, keyReleased: true })
     .catch(err => console.error(err))
 }
