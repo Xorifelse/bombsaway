@@ -148,9 +148,10 @@ class LayerFG extends React.PureComponent {
     KB_CODES.forEach(code => {
       if(code === keyCode){
         if(this.state.keys[keyCode]){
-          this.props.hasReleased(this.props.game.id, keyCode)
+          
           this.state.keys[keyCode] = false
           clearInterval(this.state.keysCycle[keyCode])
+          this.props.hasReleased(this.props.game.id, keyCode)
 
           // Fire event
           if(keyCode === 32){
@@ -200,9 +201,8 @@ class LayerFG extends React.PureComponent {
 
   componentDidUpdate() {
     if (this.props.game.keyPressed !== 32 && this.props.game.keyReleased === false) {
-      // this.state.keysCycle[this.props.game.keyPressed] = setInterval(() => this.keysUpdate(keyCode), 25)
       this.onKeyDown({ keyCode: this.props.game.keyPressed })
-    } else {
+    } else if (this.props.game.keyPressed !== 32 && this.props.game.keyReleased === true) {
       this.onKeyUp({ keyCode: this.props.game.keyPressed })
     }
   }
