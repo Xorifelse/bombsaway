@@ -95,7 +95,7 @@ class LayerFG extends React.PureComponent {
             explosions.length = 0 // dirty way to remove element from array, multiple explosions requires this to change.
             this.setState({ explosions: [...explosions]})
             if (this.props.local) {
-              this.props.hasHit(this.props.game.id, x, y, radius)
+              this.props.hasHit(this.props.game.id, x, y, radius, this.props.game.settings.tanks)
             }
           }
         }
@@ -152,7 +152,7 @@ class LayerFG extends React.PureComponent {
         // Remove projectile?
         if (y > CANVAS_HEIGHT || x < 0 || x > CANVAS_WIDTH) {
           if (this.props.local) {
-            this.props.hasHit(this.props.game.id)
+            this.props.hasHit(this.props.game.id, x, y, 0, this.props.game.settings.tanks)
           }
           return clearInterval(update)
         }
