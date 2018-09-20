@@ -23,7 +23,7 @@ import {
   deg2rad
 } from '../lib/constants'
 
-import {hasPressed, hasReleased, hasFired, switchFired} from '../actions/games'
+import {hasPressed, hasReleased, hasFired, switchFired, hasHit} from '../actions/games'
 
 
 const KB_CODES = [
@@ -54,8 +54,10 @@ class LayerFG extends React.PureComponent {
     force: 0,
     degrees: 270,
     color: this.props.color,
-    locked: false
   }
+
+  locked = false
+  hasHit = false
 
 
   updateProjectile(){
@@ -63,6 +65,10 @@ class LayerFG extends React.PureComponent {
   }
 
   fireProjectile(x, y, force, degrees){
+    if(this.props.turn !== this.props.id){
+      console.log('Not yours to fire: ' + this.props.name)
+      return
+    }
     x = polarProjectionX(x, TANK_BARREL_SIZE, degrees)
     y = polarProjectionY(y, TANK_BARREL_SIZE, degrees)
 
@@ -95,17 +101,7 @@ class LayerFG extends React.PureComponent {
         }
         yVel += g
 
-        // Remove projectile?
-        if (y > CANVAS_HEIGHT || x < 0 || x > CANVAS_WIDTH) {
-          this.state.locked = false
-          return clearInterval(update)
-        }
 
-        // Explode projectile?
-        if(this.props.game.settings.heightMap[Math.round(x)] <= y){
-          this.state.locked = false
-          return clearInterval(update)
-        }
 
         projectileX = x
         projectileY = y
@@ -116,6 +112,31 @@ class LayerFG extends React.PureComponent {
         this.setState({
           trajectorys: [...trajectorys]
         })
+
+        // Remove projectile?
+        if (y > CANVAS_HEIGHT || x < 0 || x > CANVAS_WIDTH) {
+          // if (this.hasHit === false && this.props.local === true) {
+          //   this.hasHit = true
+          //   this.locked = false
+          if (this.props.local) {
+            this.props.hasHit(this.props.game.id)
+          }
+          // }
+          return clearInterval(update)
+        }
+
+        // Explode projectile?
+        if(this.props.game.settings.heightMap[Math.round(x)] <= y){
+          // if (this.hasHit === false && this.props.local === true) {
+          //   this.hasHit = true
+          //   this.locked = false
+          if (this.props.local) {
+            this.props.hasHit(this.props.game.id)
+          }
+          // }
+          return clearInterval(update)
+        }
+
       }, 20 )
     }.bind(this))
   }
@@ -158,7 +179,6 @@ class LayerFG extends React.PureComponent {
           if(keyCode === 32){
             console.log(`Fire with force of ${this.state.force}`)
             this.props.hasFired(this.props.game.id, this.state.degrees, this.state.force)
-            this.fireProjectile(this.props.x, this.props.y, this.state.force, this.state.degrees)
             this.setState({force: 0})
           }
         }
@@ -214,14 +234,11 @@ class LayerFG extends React.PureComponent {
     } else if (this.props.game.keyPressed !== 32 && this.props.game.keyReleased === true) {
       this.onKeyUp({ keyCode: this.props.game.keyPressed })
     }
-
-    if (this.props.game.hasFired === true && this.state.locked === false) {
-      this.state.locked = true
+    if (prevProps.game.hasFired !== this.props.game.hasFired) {
       this.props.switchFired(this.props.game.id)
-      
-      this.fireProjectile(this.props.x, this.props.y, this.props.game.force, this.props.game.degrees)
-      
-    } 
+
+        this.fireProjectile(this.props.x, this.props.y, this.props.game.force, this.props.game.degrees)
+    }
   }
 
   render() {
@@ -245,7 +262,7 @@ const mapStateToProps = (state, props) => ({
 })
 
 const mapDispatchToProps = {
-  hasPressed, hasReleased, hasFired, switchFired
+  hasPressed, hasReleased, hasFired, switchFired, hasHit
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LayerFG)
