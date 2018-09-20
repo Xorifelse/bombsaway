@@ -14,7 +14,6 @@ import {
 } from '../lib/canvas'
 
 import {
-  ROTATION_SPEED,
   TANK_SIZE,
   TANK_BARREL_SIZE,
   TANK_BARREL_WIDTH,
@@ -122,27 +121,26 @@ class LayerFG extends React.PureComponent {
   }
   
   keysUpdate(keyCode){
-    if(this.props.current){
-      switch(keyCode){
-        case 32: // space
-          return this.setState({force: this.state.force + 1})
-        case 37: // left
-          // counter clock
-          if(this.state.degrees === 181) return
-          return this.setState({degrees: this.state.degrees - 1 < 0 ? 359 : this.state.degrees - 1})
-        case 38: // up
-          // clockwise
-          if(calcDegrees(this.state.degrees, 5) > 0 && calcDegrees(this.state.degrees, 5) < 180) return
-          return this.setState({degrees: calcDegrees(this.state.degrees, 5)})
-        case 39: // right
-          // clockwise
-          if(this.state.degrees === 359) return
-          return this.setState({degrees: this.state.degrees + 1 > 360 ? 1 : this.state.degrees + 1})
-        case 40: // down
-          // counter clock
-          if(this.state.degrees -5 <= 181) return
-          return this.setState({degrees: calcDegrees(this.state.degrees, -5)})
-      }
+    if(!this.props.local) return
+    switch (keyCode) {
+      case 32: // space
+        return this.setState({ force: this.state.force + 1 })
+      case 37: // left
+        // counter clock
+        if (this.state.degrees === 181) return
+        return this.setState({ degrees: this.state.degrees - 1 < 0 ? 359 : this.state.degrees - 1 })
+      case 38: // up
+        // clockwise
+        if (calcDegrees(this.state.degrees, 5) > 0 && calcDegrees(this.state.degrees, 5) < 180) return
+        return this.setState({ degrees: calcDegrees(this.state.degrees, 5) })
+      case 39: // right
+        // clockwise
+        if (this.state.degrees === 359) return
+        return this.setState({ degrees: this.state.degrees + 1 > 360 ? 1 : this.state.degrees + 1 })
+      case 40: // down
+        // counter clock
+        if (this.state.degrees - 5 <= 181) return
+        return this.setState({ degrees: calcDegrees(this.state.degrees, -5) })
     }
   }
 
@@ -155,7 +153,7 @@ class LayerFG extends React.PureComponent {
           
           this.state.keys[keyCode] = false
           clearInterval(this.state.keysCycle[keyCode])
-          this.props.hasReleased(this.props.game.id, keyCode)
+          this.props.hasReleased(this.props.game.id, this.props.id, keyCode)
 
           // Fire event
           if(keyCode === 32){
@@ -170,14 +168,14 @@ class LayerFG extends React.PureComponent {
   }
 
   onKeyDown = (e) => {
-    if(!this.props.current) return
+    //if(this.props.game.layerId === this.props.id ) return
     let keyCode = Number(e.keyCode)
 
     KB_CODES.forEach(code => {
       if(code === keyCode){
         if(!this.state.keys[keyCode]){
           // create timer for keycode that stops on key released
-          this.props.hasPressed(this.props.game.id, keyCode)
+          this.props.hasPressed(this.props.game.id, this.props.id, keyCode)
           this.state.keys[keyCode] = true
           this.state.keysCycle[keyCode] = setInterval(() => this.keysUpdate(keyCode), 25)
         }
@@ -192,17 +190,15 @@ class LayerFG extends React.PureComponent {
     KB_CODES.map(code => clearInterval(this.state.keysCycle[code]))
   }
 
-  componentDidMount(){  
-    //if (this.props.player.symbol === this.props.game.turn) {
+  componentDidMount(){
+    if(this.props.local){
+      console.log('binding events of layer ' + this.props.name + ' to ' + this.props.id)
       window.addEventListener('keydown', this.onKeyDown)
       window.addEventListener('keyup', this.onKeyUp)
-    //} 
+    }
 
     // Add keys to state, no update
     KB_CODES.map(code => this.state.keys[code] = false)
-
-    // Get player pos from socket
-
   }
   
 

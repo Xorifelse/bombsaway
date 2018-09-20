@@ -10,13 +10,11 @@ import './games/GameDetails.css'
 import {
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
-  getRndInt
 } from '../lib/canvas'
 
 import LayerBG from './LayerBG';
 import LayerFG from './LayerFG';
 import LayerTerrain from './LayerTerrain';
-import { isObject } from 'util';
 
 class Game extends React.PureComponent {
 
@@ -88,7 +86,7 @@ class Game extends React.PureComponent {
           <Layer>
             {
               game.settings.tanks.map(obj => {
-                return <LayerFG key={obj.id} game={game} {...obj} current={player.symbol === obj.id} />
+                return <LayerFG key={obj.id} game={game} {...obj} local={player.symbol === obj.id} />
               })
             }
           </Layer>

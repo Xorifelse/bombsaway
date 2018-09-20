@@ -175,6 +175,7 @@ export default class GameController {
       payload: {
         keyPressed: update.key,
         keyReleased: true,
+        layerId: update.layerId,
         id: gameId
       }
     })
@@ -185,8 +186,8 @@ export default class GameController {
       payload: { 
         keyPressed: update.key, 
         keyReleased: false,
+        layerId: update.layerId,
         id: gameId
-
       }
     })
   }
