@@ -296,6 +296,7 @@ class LayerFG extends React.PureComponent {
         <Rect x={0} y={0} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} fill="rgba(0,0,0,0.0)" />
         {this.props.local && <Text x={10} y={10} text={"Force: " + this.state.force} />}
         {this.props.local && <Text x={10} y={20} text={"Degrees: " + this.state.degrees} />}
+        {this.props.local && this.props.game.settings.tanks && <Text x={10} y={30} text={"Health: " + this.props.game.settings.tanks[this.props.id == 'o' ? 0 : 1].health.toFixed(0)} />}
         
         <Tank x={this.props.x} y={this.props.y} degrees={this.state.degrees} color={this.props.color} />
         {this.state.trajectorys.map((line, i) => <Line key={i} points={line} stroke={this.props.color} strokeWidth={1} opacity={.5} />)}
