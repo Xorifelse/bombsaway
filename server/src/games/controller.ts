@@ -232,10 +232,12 @@ export default class GameController {
      @Body() update: any
    ) {
 
-    const { x, y, radius, tankIdHit } = update
+    const { x, y, radius } = update
+
+    const tankIdHit = 0
 
     const tankNewColor = (x, y, radius) => {
-      return `rgb(${PLAYER_COLORS[tankIdHit].r}, ${PLAYER_COLORS[tankIdHit].g}, ${PLAYER_COLORS[tankIdHit].b})`
+      return `rgb(${PLAYER_COLORS[tankIdHit].r-50}, ${PLAYER_COLORS[tankIdHit].g}, ${PLAYER_COLORS[tankIdHit].b})`
     }
 
     const game = await Game.findOneById(gameId)
@@ -258,7 +260,7 @@ export default class GameController {
           damage: update.damage,
           turn: game.turn,
           tankIdHit: tankIdHit,
-          tankColor: tankNewColor
+          tankColor: tankNewColor(x, y, radius)
         }
       })
   
