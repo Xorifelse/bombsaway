@@ -16,6 +16,7 @@ import {
 import LayerBG from './LayerBG';
 import LayerFG from './LayerFG';
 import LayerTerrain from './LayerTerrain';
+import { isObject } from 'util';
 
 class Game extends React.PureComponent {
 
@@ -33,7 +34,6 @@ class Game extends React.PureComponent {
   joinGame = () => this.props.joinGame(this.props.game.id)
 
   render() {
-
     const {game, users, authenticated, userId} = this.props
 
     if (!authenticated) return (
@@ -48,14 +48,6 @@ class Game extends React.PureComponent {
     const winner = game.players
       .filter(p => p.symbol === game.winner)
       .map(p => p.userId)[0]
-
-    // layer settings for each tank
-    const x = []
-    const y = []
-    x[0] = Math.round(getRndInt(10, game.settings.canvasWidth / 2))
-    y[0] = game.settings.heightMap[x[0]]
-    x[1] = Math.round(getRndInt(game.settings.canvasWidth / 2, game.settings.canvasWidth - 10))
-    y[1] = game.settings.heightMap[x[1]]
 
     return (
       <div>
@@ -93,8 +85,8 @@ class Game extends React.PureComponent {
           </Layer>
           <Layer>
             {
-              game.settings.tanks.map((obj, i) => {
-                return <LayerFG game={game} player={i} color={obj.c} x={obj.x} y={obj.y} />
+              game.settings.tanks.map(obj => {
+                return <LayerFG key={obj.id} game={game} {...obj} current={player.symbol === obj.id} />
               })
             }
           </Layer>

@@ -15,21 +15,18 @@ import {
   CANVAS_WIDTH,
   PLAYER_COUNT,
   PLAYER_COLORS,
-  PLAYER_START_X
+  PLAYER_START_X,
+  PLAYER_NAMES,
+  PLAYER_ID
 } from '../lib/constants'
 
-// class GameUpdate {
 
-//   @Validate(IsBoard, {
-//     message: 'Not a valid board'
-//   })
-//   board: Board
-// }
-
-interface tankstype{
-  x,
-  y,
-  c
+interface Tank{
+  x,     // x cord
+  y,     // y cord
+  color, // color
+  id,    // player
+  name   // color name
 }
 
 @JsonController()
@@ -43,16 +40,19 @@ export default class GameController {
   ) {
     const entity = await Game.create()
 
-    const tanks: tankstype[] = []
+    const tanks: Tank[] = []
     const heightMap = genHeightmap(CANVAS_WIDTH, CANVAS_HEIGHT)
 
     for(let i = 0; i < PLAYER_COUNT; i++){
       let x = Math.round(PLAYER_START_X[i])
-      let y = heightMap[Math.round(x)]
-      console.log(heightMap[x])
-      let c = PLAYER_COLORS[i]
-
-      tanks.push({x, y, c})
+      console.log(PLAYER_ID[i])
+      tanks.push({
+        id: PLAYER_ID[i],
+        x, 
+        y: heightMap[x], 
+        name: PLAYER_NAMES[i],
+        color: PLAYER_COLORS[i]
+      })
     }
 
     const settings = {

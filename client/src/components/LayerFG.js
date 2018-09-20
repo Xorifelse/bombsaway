@@ -74,8 +74,6 @@ class LayerFG extends React.PureComponent {
     let yVel = -force/2;
     let g = 1;
 
-
-
     let line = [x,y]
 
     this.setState({
@@ -98,10 +96,16 @@ class LayerFG extends React.PureComponent {
         }
         yVel += g
 
-        // check collision with ground
+        // Remove projectile?
+        if (y > CANVAS_HEIGHT || x < 0 || x > CANVAS_WIDTH) {
+          this.state.locked = false
+          return clearInterval(update)
+        }
+
+        // Explode projectile?
         if(this.props.game.settings.heightMap[Math.round(x)] <= y){
-         clearInterval(update)
-         this.state.locked = false
+          this.state.locked = false
+          return clearInterval(update)
         }
 
         projectileX = x
@@ -113,35 +117,32 @@ class LayerFG extends React.PureComponent {
         this.setState({
           trajectorys: [...trajectorys]
         })
-        
-        if (y > CANVAS_HEIGHT || x < 0 || x > CANVAS_WIDTH) {
-          clearInterval(update)
-          this.state.locked = false
-        }
       }, 20 )
     }.bind(this))
   }
   
   keysUpdate(keyCode){
-    switch(keyCode){
-      case 32: // space
-        return this.setState({force: this.state.force + 1})
-      case 37: // left
-        // counter clock
-        if(this.state.degrees === 181) return
-        return this.setState({degrees: this.state.degrees - 1 < 0 ? 359 : this.state.degrees - 1})
-      case 38: // up
-        // clockwise
-        if(calcDegrees(this.state.degrees, 5) > 0 && calcDegrees(this.state.degrees, 5) < 180) return
-        return this.setState({degrees: calcDegrees(this.state.degrees, 5)})
-      case 39: // right
-        // clockwise
-        if(this.state.degrees === 359) return
-        return this.setState({degrees: this.state.degrees + 1 > 360 ? 1 : this.state.degrees + 1})
-      case 40: // down
-        // counter clock
-        if(this.state.degrees -5 <= 181) return
-        return this.setState({degrees: calcDegrees(this.state.degrees, -5)})
+    if(this.props.current){
+      switch(keyCode){
+        case 32: // space
+          return this.setState({force: this.state.force + 1})
+        case 37: // left
+          // counter clock
+          if(this.state.degrees === 181) return
+          return this.setState({degrees: this.state.degrees - 1 < 0 ? 359 : this.state.degrees - 1})
+        case 38: // up
+          // clockwise
+          if(calcDegrees(this.state.degrees, 5) > 0 && calcDegrees(this.state.degrees, 5) < 180) return
+          return this.setState({degrees: calcDegrees(this.state.degrees, 5)})
+        case 39: // right
+          // clockwise
+          if(this.state.degrees === 359) return
+          return this.setState({degrees: this.state.degrees + 1 > 360 ? 1 : this.state.degrees + 1})
+        case 40: // down
+          // counter clock
+          if(this.state.degrees -5 <= 181) return
+          return this.setState({degrees: calcDegrees(this.state.degrees, -5)})
+      }
     }
   }
 
@@ -169,6 +170,7 @@ class LayerFG extends React.PureComponent {
   }
 
   onKeyDown = (e) => {
+    if(!this.props.current) return
     let keyCode = Number(e.keyCode)
 
     KB_CODES.forEach(code => {
@@ -204,13 +206,16 @@ class LayerFG extends React.PureComponent {
   }
   
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState){
+    // Peter -> check prevProps or prevState first to see what prop has changed!
+    // return immidiatly on action!
+
     if (this.props.game.keyPressed !== 32 && this.props.game.keyReleased === false) {
       this.onKeyDown({ keyCode: this.props.game.keyPressed })
     } else if (this.props.game.keyPressed !== 32 && this.props.game.keyReleased === true) {
       this.onKeyUp({ keyCode: this.props.game.keyPressed })
     }
-    console.log(this.props.game.hasFired)
+
     if (this.props.game.hasFired === true && this.state.locked === false) {
       this.state.locked = true
       this.props.switchFired(this.props.game.id)
@@ -221,7 +226,6 @@ class LayerFG extends React.PureComponent {
   }
 
   render() {
-    console.log(this.props.color)
     return (
       <Group>
         <Rect x={0} y={0} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} fill="rgba(0,0,0,0.0)" />
@@ -229,8 +233,8 @@ class LayerFG extends React.PureComponent {
         <Text x={10} y={20} text={"Degrees: " + this.state.degrees} />
         <Tank x={this.props.x} y={this.props.y} degrees={this.state.degrees} color={this.props.color} />
         {
-          this.state.trajectorys.map(line => {
-            return <Line points={line} stroke={this.props.color} strokeWidth={1} opacity={.5} />
+          this.state.trajectorys.map((line, i) => {
+            return <Line key={i} points={line} stroke={this.props.color} strokeWidth={1} opacity={.5} />
           })
         }
       </Group>       
