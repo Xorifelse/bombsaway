@@ -209,8 +209,11 @@ class LayerFG extends React.PureComponent {
           
           this.state.keys[keyCode] = false
           clearInterval(this.state.keysCycle[keyCode])
-          this.props.hasReleased(this.props.game.id, this.props.id, keyCode)
 
+          if(this.props.local){
+            this.props.hasReleased(this.props.game.id, this.props.id, keyCode)
+          }
+          
           // Fire event
           if(keyCode === 32){
             console.log(`Fire with force of ${this.state.force}`)
@@ -234,7 +237,10 @@ class LayerFG extends React.PureComponent {
       if(code === keyCode){
         if(this.state.keys[keyCode] === false){
           // create timer for keycode that stops on key released
-          this.props.hasPressed(this.props.game.id, this.props.id, keyCode)
+          if(this.props.local){
+            this.props.hasPressed(this.props.game.id, this.props.id, keyCode)
+          }
+
           this.state.keys[keyCode] = true
           this.state.keysCycle[keyCode] = setInterval(() => this.keysUpdate(keyCode), 25)
         }
@@ -266,11 +272,11 @@ class LayerFG extends React.PureComponent {
     // return immidiatly on action!
 
     if(!this.props.local){
-      if(this.props.game.keyPressed !== 32 && this.props.game.keyReleased === false && this.state.keysCycle[this.props.game.keyPressed] == false){
+      if(this.props.game.keyPressed !== 32 && this.props.game.keyReleased === false){
         return this.onKeyDown({ keyCode: this.props.game.keyPressed })
       }
   
-      if(this.props.game.keyPressed !== 32 && this.props.game.keyReleased === true && this.state.keysCycle[this.props.game.keyPressed] == true){
+      if(this.props.game.keyPressed !== 32 && this.props.game.keyReleased === true){
         return this.onKeyUp({ keyCode: this.props.game.keyPressed })
       }
     }
