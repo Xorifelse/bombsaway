@@ -67,7 +67,8 @@ export default (state = null, {type, payload}) => {
           [payload.gameId]: 
             {...state[payload.gameId], 
               turn: payload.turn,
-              settings: newSettings
+              settings: newSettings,
+              status: payload.gameStatus
             }
         }
 

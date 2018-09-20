@@ -262,7 +262,12 @@ export default class GameController {
         let distX = Math.abs(serverX - x)
         let distY = Math.abs(serverY - y)
 
-        tanks[i].health -=  (distX + distY)
+        tanks[i].health -=  radius - (distX + distY)
+        if (tanks[i].health <= 0) {
+         
+          game.status = 'finished'
+          await game.save()
+        }
       }
     }
 
@@ -271,7 +276,8 @@ export default class GameController {
       payload: {
         gameId: gameId,
         turn: game.turn,
-        tanks
+        tanks,
+        gameStatus : game.status
       }
     })
   
