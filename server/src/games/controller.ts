@@ -26,7 +26,8 @@ interface Tank{
   y,     // y cord
   color, // color
   id,    // player
-  name   // color name
+  name,   // color name
+  health
 }
 
 @JsonController()
@@ -51,7 +52,8 @@ export default class GameController {
         x, 
         y: heightMap[x], 
         name: PLAYER_NAMES[i],
-        color: PLAYER_COLORS[i]
+        color: PLAYER_COLORS[i],
+        health: 100
       })
     }
 
@@ -229,6 +231,8 @@ export default class GameController {
      @Param('id') gameId: number,
      @Body() update: any
    ) {
+
+     const { x, y, radius } = update
 
     const game = await Game.findOneById(gameId)
     if (!game) throw new NotFoundError(`Game does not exist`)
