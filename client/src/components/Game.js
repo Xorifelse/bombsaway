@@ -47,19 +47,26 @@ class Game extends React.PureComponent {
       .filter(p => p.symbol === game.winner)
       .map(p => p.userId)[0]
 
-    const tank = game.settings.tanks.filter(tank => tank.id === player.symbol)[0]
+    let playerText = ''  
+    if (game.status === 'started') {
+      const tank = game.settings.tanks.filter(tank => tank.id === player.symbol)[0]
+      playerText = <span style={{color: tank.color}}>You are: {tank.name}</span>
+    }
+     
+    
 
     return (
       <div>
         <h1>Game #{game.id}</h1>
 
-        <p>Status: {game.status} <span style={{color: tank.color}}>You are: {tank.name}</span></p>
+        <p>Status: {game.status} {playerText}</p>
 
         {
           game.status === 'started' &&
           player && player.symbol === game.turn &&
           <div>It's your turn! </div>
-        }
+
+        } 
 
         {
           game.status === 'pending' &&
