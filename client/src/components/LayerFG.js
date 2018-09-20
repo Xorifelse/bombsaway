@@ -56,14 +56,6 @@ class LayerFG extends React.PureComponent {
     color: this.props.color,
   }
 
-  locked = false
-  hasHit = false
-
-
-  updateProjectile(){
-
-  }
-
   fireProjectile(x, y, force, degrees){
     if(this.props.turn !== this.props.id){
       console.log('Not yours to fire: ' + this.props.name)
@@ -115,25 +107,17 @@ class LayerFG extends React.PureComponent {
 
         // Remove projectile?
         if (y > CANVAS_HEIGHT || x < 0 || x > CANVAS_WIDTH) {
-          // if (this.hasHit === false && this.props.local === true) {
-          //   this.hasHit = true
-          //   this.locked = false
           if (this.props.local) {
             this.props.hasHit(this.props.game.id)
           }
-          // }
           return clearInterval(update)
         }
 
         // Explode projectile?
         if(this.props.game.settings.heightMap[Math.round(x)] <= y){
-          // if (this.hasHit === false && this.props.local === true) {
-          //   this.hasHit = true
-          //   this.locked = false
           if (this.props.local) {
             this.props.hasHit(this.props.game.id)
           }
-          // }
           return clearInterval(update)
         }
 
