@@ -17,6 +17,26 @@ export const PLAYER_COLORS = [
   "#4e2a04"
 ]
 
+export const PLAYER_NAMES = [
+  'Red',
+  'Blue',
+  'Teal',
+  'Purple',
+  'Yellow',
+  'Orange',
+  'Green',
+  'Pink',
+  'Gray',
+  'Light blue',
+  'Dark green',
+  'Brown'
+]
+
+export const PLAYER_ID = [
+  'o',
+  'x'
+]
+
 export const PLAYER_START_X = [
   CANVAS_WIDTH / 2 / 2,
   (CANVAS_WIDTH / 2) + (CANVAS_WIDTH / 2) / 2
