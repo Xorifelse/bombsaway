@@ -11,6 +11,7 @@ export const UPDATE_GAME_SUCCESS = 'UPDATE_GAME_SUCCESS'
 export const KEY_PRESSED = 'KEY_PRESSED'
 export const HAS_FIRED = 'HAS_FIRED' 
 export const SWITCH_FIRED = 'SWITCH_FIRED'
+export const HAS_HIT = 'HAS_HIT'
 
 const updateGames = games => ({
   type: UPDATE_GAMES,
@@ -130,3 +131,16 @@ export const switchFired = (gameId) => ({
     gameId
   }
 })
+
+export const hasHit = (gameId, position, damage) => (dispatch, getState) => {
+  const state = getState()
+  const jwt = state.currentUser.jwt
+
+  if (isExpired(jwt)) return dispatch(logout())
+
+  request
+    .patch(`${baseUrl}/games/${gameId}/hit`)
+    .set('Authorization', `Bearer ${jwt}`)
+    .send({ position, damage })
+    .catch(err => console.error(err))
+}
