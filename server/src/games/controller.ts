@@ -17,7 +17,8 @@ import {
   PLAYER_COLORS,
   PLAYER_START_X,
   PLAYER_NAMES,
-  PLAYER_ID
+  PLAYER_ID,
+  between
 } from '../lib/constants'
 
 
@@ -29,6 +30,8 @@ interface Tank{
   name,   // color name
   health
 }
+
+const heightMap = genHeightmap(CANVAS_WIDTH, CANVAS_HEIGHT)
 
 @JsonController()
 export default class GameController {
@@ -42,7 +45,7 @@ export default class GameController {
     const entity = await Game.create()
 
     const tanks: Tank[] = []
-    const heightMap = genHeightmap(CANVAS_WIDTH, CANVAS_HEIGHT)
+    
 
     for(let i = 0; i < PLAYER_COUNT; i++){
       let x = Math.round(PLAYER_START_X[i])
@@ -232,13 +235,11 @@ export default class GameController {
      @Body() update: any
    ) {
 
-    const { x, y, radius } = update
+    const { x, y, radius , tanks} = update
 
-    const tankIdHit = 0
-
-    const tankNewColor = (x, y, radius) => {
-      return `rgb(${PLAYER_COLORS[tankIdHit].r-50}, ${PLAYER_COLORS[tankIdHit].g}, ${PLAYER_COLORS[tankIdHit].b})`
-    }
+    // const tankNewColor = (x, y, radius) => {
+    //   return `rgb(${PLAYER_COLORS[tankIdHit].r-50}, ${PLAYER_COLORS[tankIdHit].g}, ${PLAYER_COLORS[tankIdHit].b})`
+    // }
 
     const game = await Game.findOneById(gameId)
     if (!game) throw new NotFoundError(`Game does not exist`)
@@ -252,17 +253,27 @@ export default class GameController {
     game.turn = player.symbol === 'x' ? 'o' : 'x'
     await game.save()
   
-      io.emit('action', {
-        type: 'HAS_HIT',
-        payload: { 
-          gameId: gameId,
-          hitPostion: update.position,
-          damage: update.damage,
-          turn: game.turn,
-          tankIdHit: tankIdHit,
-          tankColor: tankNewColor(x, y, radius)
-        }
-      })
+    for(let i=0; i<PLAYER_COUNT; i++){
+      let serverX = PLAYER_START_X[i]
+      let serverY = heightMap[Math.round(serverX)]
+
+      if(between(x, serverX - radius, serverX + radius) && between(y, serverY - radius, serverY + radius)){
+
+        let distX = Math.abs(serverX - x)
+        let distY = Math.abs(serverY - y)
+
+        tanks[i].health -=  (distX + distY)
+      }
+    }
+
+    io.emit('action', {
+      type: 'HAS_HIT',
+      payload: {
+        gameId: gameId,
+        turn: game.turn,
+        tanks
+      }
+    })
   
      return update
     }
