@@ -254,16 +254,20 @@ class LayerFG extends React.PureComponent {
     // Peter -> check prevProps or prevState first to see what prop has changed!
     // return immidiatly on action!
 
-    if (this.props.game.keyPressed !== 32 && this.props.game.keyReleased === false) {
-      this.onKeyDown({ keyCode: this.props.game.keyPressed })
-    } else if (this.props.game.keyPressed !== 32 && this.props.game.keyReleased === true) {
-      this.onKeyUp({ keyCode: this.props.game.keyPressed })
+    if(prevProps.game.keyPressed !== 32 && !this.props.game.keyReleased){
+      return this.onKeyDown({ keyCode: this.props.game.keyPressed })
     }
+
+    if(prevProps.game.keyPressed !== 32 && this.props.game.keyReleased){
+      return this.onKeyUp({ keyCode: this.props.game.keyPressed })
+    }
+
     if (prevProps.game.hasFired !== this.props.game.hasFired) {
       this.props.switchFired(this.props.game.id)
 
         this.fireProjectile(this.props.x, this.props.y, this.props.game.force, this.props.game.degrees)
     }
+
   }
 
   render() {
