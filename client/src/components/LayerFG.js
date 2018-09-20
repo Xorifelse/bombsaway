@@ -197,7 +197,7 @@ class LayerFG extends React.PureComponent {
 
   onKeyUp = (e) => {
     if(this.props.turn !== this.props.id){
-      console.log('Not yours to update layer: ' + this.props.name)
+      console.log('KEY UP - Not yours to update layer: ' + this.props.name)
       return
     }
 

@@ -132,7 +132,7 @@ export const switchFired = (gameId) => ({
   }
 })
 
-export const hasHit = (gameId, position, damage) => (dispatch, getState) => {
+export const hasHit = (gameId, x, y, radius) => (dispatch, getState) => {
   const state = getState()
   const jwt = state.currentUser.jwt
 
@@ -141,6 +141,6 @@ export const hasHit = (gameId, position, damage) => (dispatch, getState) => {
   request
     .patch(`${baseUrl}/games/${gameId}/hit`)
     .set('Authorization', `Bearer ${jwt}`)
-    .send({ position, damage })
+    .send({ x, y, radius })
     .catch(err => console.error(err))
 }
