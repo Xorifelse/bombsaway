@@ -1,0 +1,9 @@
+.info-card {
+  margin: auto;
+  width: 400px;
+  height: 150px;
+}
+
+.info-card-content {
+  margin-top: -10px;
+}
