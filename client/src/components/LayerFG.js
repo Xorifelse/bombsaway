@@ -63,6 +63,11 @@ class LayerFG extends React.PureComponent {
   }
 
   fireProjectile(x, y, force, degrees){
+    if(this.props.turn !== this.props.id){
+      console.log('Not yours to shoot: ' + this.props.name)
+      return
+    }
+
     x = polarProjectionX(x, TANK_BARREL_SIZE, degrees)
     y = polarProjectionY(y, TANK_BARREL_SIZE, degrees)
 
@@ -95,18 +100,6 @@ class LayerFG extends React.PureComponent {
         }
         yVel += g
 
-        // Remove projectile?
-        if (y > CANVAS_HEIGHT || x < 0 || x > CANVAS_WIDTH) {
-          this.state.locked = false
-          return clearInterval(update)
-        }
-
-        // Explode projectile?
-        if(this.props.game.settings.heightMap[Math.round(x)] <= y){
-          this.state.locked = false
-          return clearInterval(update)
-        }
-
         projectileX = x
         projectileY = y
 
@@ -116,6 +109,19 @@ class LayerFG extends React.PureComponent {
         this.setState({
           trajectorys: [...trajectorys]
         })
+
+        // Remove projectile?
+        if (y > CANVAS_HEIGHT || x < 0 || x > CANVAS_WIDTH) {
+          this.state.locked = false
+          return clearInterval(update)
+        }
+
+        // Explode projectile?
+        if(this.props.game.settings.heightMap[Math.round(x)] < y){
+          this.state.locked = false
+          return clearInterval(update)
+        }
+        console.log('next update for trajectory')
       }, 20 )
     }.bind(this))
   }
@@ -228,8 +234,9 @@ class LayerFG extends React.PureComponent {
     return (
       <Group>
         <Rect x={0} y={0} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} fill="rgba(0,0,0,0.0)" />
-        <Text x={10} y={10} text={"Force: " + this.state.force} />
-        <Text x={10} y={20} text={"Degrees: " + this.state.degrees} />
+        {this.props.local && <Text x={10} y={10} text={"Force: " + this.state.force} />}
+        {this.props.local && <Text x={10} y={20} text={"Degrees: " + this.state.degrees} />}
+        
         <Tank x={this.props.x} y={this.props.y} degrees={this.state.degrees} color={this.props.color} />
         {
           this.state.trajectorys.map((line, i) => {
