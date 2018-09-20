@@ -49,6 +49,7 @@ function Tank({x, y, degrees, color}){
 class LayerFG extends React.PureComponent {
   state = {
     trajectorys: [],
+    explosions: [],
     keysCycle: [],
     keys: [],
     force: 0,
@@ -56,11 +57,53 @@ class LayerFG extends React.PureComponent {
     color: this.props.color,
   }
 
-  fireProjectile(x, y, force, degrees){
-    if(this.props.turn !== this.props.id){
-      console.log('Not yours to fire: ' + this.props.name)
-      return
+  createExplosion(x, y, radius){
+    let circle = {
+      x,
+      y,
+      fillRadialGradientStartPoint: 0,
+      fillRadialGradientStartRadius: 0,
+      fillRadialGradientEndPoint: 0,
+      fillRadialGradientEndRadius: radius,
+      fillRadialGradientColorStops: [0, 'yellow', 0.6, 'orange', 1, 'red'],
+      radius: 0,
+      expand: true
     }
+
+    this.setState({
+      explosions: [...this.state.explosions, circle]
+    }, function(){
+      let explosions = this.state.explosions
+      let index = this.state.explosions.length - 1
+      let circle = this.state.explosions[index]
+
+      let update = setInterval(() => {
+        if(circle.expand){
+          if(circle.radius <= radius){
+            circle.radius += 2
+            this.setState({ explosions: [...explosions]})
+          } else {
+            circle.expand = false
+            this.setState({ explosions: [...explosions]})
+          }
+        } else {
+          if(circle.radius > 0){
+            circle.radius -= 2
+            this.setState({ explosions: [...explosions]})
+          } else {
+            clearInterval(update)
+            explosions.length = 0 // dirty way to remove element from array, multiple explosions requires this to change.
+            this.setState({ explosions: [...explosions]})
+          }
+        }
+        circle.radius
+      }, 50)
+    }.bind(this))
+  }
+
+  fireProjectile(x, y, force, degrees){
+    if(this.props.turn !== this.props.id) return
+
     x = polarProjectionX(x, TANK_BARREL_SIZE, degrees)
     y = polarProjectionY(y, TANK_BARREL_SIZE, degrees)
 
@@ -93,8 +136,6 @@ class LayerFG extends React.PureComponent {
         }
         yVel += g
 
-
-
         projectileX = x
         projectileY = y
 
@@ -120,7 +161,6 @@ class LayerFG extends React.PureComponent {
           }
           return clearInterval(update)
         }
-
       }, 20 )
     }.bind(this))
   }
@@ -229,13 +269,14 @@ class LayerFG extends React.PureComponent {
     return (
       <Group>
         <Rect x={0} y={0} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} fill="rgba(0,0,0,0.0)" />
-        <Text x={10} y={10} text={"Force: " + this.state.force} />
-        <Text x={10} y={20} text={"Degrees: " + this.state.degrees} />
+        {this.props.local && <Text x={10} y={10} text={"Force: " + this.state.force} />}
+        {this.props.local && <Text x={10} y={20} text={"Degrees: " + this.state.degrees} />}
+        
         <Tank x={this.props.x} y={this.props.y} degrees={this.state.degrees} color={this.props.color} />
-        {
-          this.state.trajectorys.map((line, i) => {
-            return <Line key={i} points={line} stroke={this.props.color} strokeWidth={1} opacity={.5} />
-          })
+        {this.state.trajectorys.map((line, i) => <Line key={i} points={line} stroke={this.props.color} strokeWidth={1} opacity={.5} />)}
+        {this.state.explosions.map((explosion, i) => {
+          return <Circle {...explosion} />
+        })
         }
       </Group>       
     )
