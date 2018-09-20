@@ -41,3 +41,9 @@ export const PLAYER_START_X = [
   CANVAS_WIDTH / 2 / 2,
   (CANVAS_WIDTH / 2) + (CANVAS_WIDTH / 2) / 2
 ]
+
+export const PLAYER_HEALTH = [
+  100, 100
+]
+
+export const between = (n, min, max) => n >= min && n <= max

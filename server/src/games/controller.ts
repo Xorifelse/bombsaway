@@ -17,7 +17,9 @@ import {
   PLAYER_COLORS,
   PLAYER_START_X,
   PLAYER_NAMES,
-  PLAYER_ID
+  PLAYER_ID,
+  between,
+  PLAYER_HEALTH
 } from '../lib/constants'
 
 
@@ -29,6 +31,8 @@ interface Tank{
   name,   // color name
   health
 }
+
+const heightMap = genHeightmap(CANVAS_WIDTH, CANVAS_HEIGHT)
 
 @JsonController()
 export default class GameController {
@@ -42,11 +46,11 @@ export default class GameController {
     const entity = await Game.create()
 
     const tanks: Tank[] = []
-    const heightMap = genHeightmap(CANVAS_WIDTH, CANVAS_HEIGHT)
+
 
     for(let i = 0; i < PLAYER_COUNT; i++){
       let x = Math.round(PLAYER_START_X[i])
-      console.log(PLAYER_ID[i])
+
       tanks.push({
         id: PLAYER_ID[i],
         x, 
@@ -236,8 +240,26 @@ export default class GameController {
 
     const tankIdHit = 0
 
-    const tankNewColor = (x, y, radius) => {
-      return `rgb(${PLAYER_COLORS[tankIdHit].r-50}, ${PLAYER_COLORS[tankIdHit].g}, ${PLAYER_COLORS[tankIdHit].b})`
+    const damageCalc = (x, y, radius) => {
+      for(let i = 0; i < PLAYER_COUNT; i++){
+        let serverX = PLAYER_START_X[i]
+        let serverY = heightMap[Math.round(serverX)]
+
+        if(between(x, serverX - radius, serverX + radius) && between(y, serverY - radius, serverY + radius)){
+
+          let distX = Math.abs(serverX - x)
+          let distY = Math.abs(serverY - y)
+
+          PLAYER_HEALTH[i] = PLAYER_HEALTH[i] - (distX + distY)
+          if(PLAYER_HEALTH[i] < 0){
+            // win to other player
+            console.log('winnn!!!')
+          }
+
+          return {id: i, damage: PLAYER_HEALTH[i]}
+        }
+      }
+      return {id: null, damage: null}
     }
 
     const game = await Game.findOneById(gameId)
@@ -257,10 +279,9 @@ export default class GameController {
         payload: { 
           gameId: gameId,
           hitPostion: update.position,
-          damage: update.damage,
           turn: game.turn,
-          tankIdHit: tankIdHit,
-          tankColor: tankNewColor(x, y, radius)
+          tankIdHit: damageCalc(x, y, radius).id || 0,
+          health: damageCalc(x, y, radius).damage || update.damage
         }
       })
   

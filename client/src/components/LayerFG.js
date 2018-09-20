@@ -26,6 +26,10 @@ import {
 import {hasPressed, hasReleased, hasFired, switchFired, hasHit} from '../actions/games'
 
 
+
+// ,maybe use later
+// `rgb(${(PLAYER_COLORS[i].r / 100) * damage}, ${(PLAYER_COLORS[i].g /100) * damage}, ${(PLAYER_COLORS[i].b / 100) * damage})`
+
 const KB_CODES = [
   // defines what keyboard codes to listen to
 
@@ -152,7 +156,7 @@ class LayerFG extends React.PureComponent {
         // Remove projectile?
         if (y > CANVAS_HEIGHT || x < 0 || x > CANVAS_WIDTH) {
           if (this.props.local) {
-            this.props.hasHit(this.props.game.id)
+            this.props.hasHit(this.props.game.id, x, y, 0)
           }
           return clearInterval(update)
         }
@@ -268,10 +272,7 @@ class LayerFG extends React.PureComponent {
   
 
   componentDidUpdate(prevProps, prevState){
-    // Peter -> check prevProps or prevState first to see what prop has changed!
-    // return immidiatly on action!
-
-    if(!this.props.local){
+    if(!this.props.local){ // only for the local layer
       if(this.props.game.keyPressed !== 32 && this.props.game.keyReleased === false){
         return this.onKeyDown({ keyCode: this.props.game.keyPressed })
       }
@@ -284,8 +285,7 @@ class LayerFG extends React.PureComponent {
 
     if (prevProps.game.hasFired !== this.props.game.hasFired) {
       this.props.switchFired(this.props.game.id)
-
-        this.fireProjectile(this.props.x, this.props.y, this.props.game.force, this.props.game.degrees)
+      this.fireProjectile(this.props.x, this.props.y, this.props.game.force, this.props.game.degrees)
     }
 
   }

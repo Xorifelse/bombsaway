@@ -61,13 +61,12 @@ export default (state = null, {type, payload}) => {
 
       case HAS_HIT:
       const newSettings = {...state[payload.gameId].settings}
-      newSettings.tanks[payload.tankIdHit].color = payload.tankColor
+      newSettings.tanks[payload.tankIdHit].health = payload.health
         return {
           ...state,
           [payload.gameId]: 
             {...state[payload.gameId], 
               hitPosition: payload.hitPosition,
-              damage: payload.damage,
               turn: payload.turn,
               settings: newSettings
             }
