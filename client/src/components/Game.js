@@ -5,7 +5,10 @@ import {Redirect} from 'react-router-dom'
 import {getGames, joinGame, updateGame} from '../actions/games'
 import {getUsers} from '../actions/users'
 import {userId} from '../jwt'
-import './games/GameDetails.css'
+import './Game.css'
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
+import Typography from '@material-ui/core/Typography'
 
 import {
   CANVAS_HEIGHT,
@@ -48,6 +51,7 @@ class Game extends React.PureComponent {
       .map(p => p.userId)[0]
 
     let playerText = ''  
+    let playerColor = ''
     if (game.status === 'started') {
       const tank = game.settings.tanks.filter(tank => tank.id === player.symbol)[0]
       playerText = <span style={{color: tank.color}}>You are: {tank.name}</span>
@@ -57,28 +61,32 @@ class Game extends React.PureComponent {
 
     return (
       <div>
-        <h1>Game #{game.id}</h1>
+        <Card className="info-card" style={{backgroundColor: playerColor}}>
+          <CardContent className="info-card-content">
+            <Typography variant="display2">Game {game.id}</Typography>
 
-        <p>Status: {game.status} {playerText}</p>
+            <Typography variant="title">Status: {game.status} {playerText}</Typography>
 
-        {
-          game.status === 'started' &&
-          player && player.symbol === game.turn &&
-          <div>It's your turn! </div>
+            {
+              game.status === 'started' &&
+              player && player.symbol === game.turn &&
+              <Typography variant="title">It's your turn! </Typography>
+              
 
-        } 
+            } 
 
-        {
-          game.status === 'pending' &&
-          game.players.map(p => p.userId).indexOf(userId) === -1 &&
-          <button onClick={this.joinGame}>Join Game</button>
-        }
+            {
+              game.status === 'pending' &&
+              game.players.map(p => p.userId).indexOf(userId) === -1 &&
+              <button onClick={this.joinGame}>Join Game</button>
+            }
 
-        {
-          winner &&
-          <p>Winner: {users[winner].firstName}</p>
-        }
-
+            {
+              winner &&
+              <p>Winner: {users[winner].firstName}</p>
+            }
+          </CardContent>
+        </Card>
         <hr />
 
         {
