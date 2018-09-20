@@ -264,14 +264,12 @@ class LayerFG extends React.PureComponent {
     // Peter -> check prevProps or prevState first to see what prop has changed!
     // return immidiatly on action!
 
-    //if() return // skip spacebar event, only for local client
-
     if(!this.props.local){
-      if(this.props.game.keyPressed !== 32 && this.props.game.keyReleased === false){
+      if(this.props.game.keyPressed !== 32 && this.props.game.keyReleased === false && this.state.keysCycle[this.props.game.keyPressed] == false){
         return this.onKeyDown({ keyCode: this.props.game.keyPressed })
       }
   
-      if(this.props.game.keyPressed !== 32 && this.props.game.keyReleased === true){
+      if(this.props.game.keyPressed !== 32 && this.props.game.keyReleased === true && this.state.keysCycle[this.props.game.keyPressed] == true){
         return this.onKeyUp({ keyCode: this.props.game.keyPressed })
       }
     }
