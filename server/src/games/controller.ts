@@ -26,7 +26,8 @@ interface Tank{
   y,     // y cord
   color, // color
   id,    // player
-  name   // color name
+  name,   // color name
+  health
 }
 
 @JsonController()
@@ -51,7 +52,8 @@ export default class GameController {
         x, 
         y: heightMap[x], 
         name: PLAYER_NAMES[i],
-        color: PLAYER_COLORS[i]
+        color: `rgb(${PLAYER_COLORS[i].r}, ${PLAYER_COLORS[i].g}, ${PLAYER_COLORS[i].b})`,
+        health: 100
       })
     }
 
@@ -230,6 +232,14 @@ export default class GameController {
      @Body() update: any
    ) {
 
+    const { x, y, radius } = update
+
+    const tankIdHit = 0
+
+    const tankNewColor = (x, y, radius) => {
+      return `rgb(${PLAYER_COLORS[tankIdHit].r-50}, ${PLAYER_COLORS[tankIdHit].g}, ${PLAYER_COLORS[tankIdHit].b})`
+    }
+
     const game = await Game.findOneById(gameId)
     if (!game) throw new NotFoundError(`Game does not exist`)
 
@@ -248,7 +258,9 @@ export default class GameController {
           gameId: gameId,
           hitPostion: update.position,
           damage: update.damage,
-          turn: game.turn
+          turn: game.turn,
+          tankIdHit: tankIdHit,
+          tankColor: tankNewColor(x, y, radius)
         }
       })
   
