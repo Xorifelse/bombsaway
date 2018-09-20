@@ -159,6 +159,7 @@ class LayerFG extends React.PureComponent {
           if (this.props.local) {
             this.props.hasHit(this.props.game.id)
           }
+          this.createExplosion(x,y, 50)
           return clearInterval(update)
         }
       }, 20 )
