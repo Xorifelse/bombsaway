@@ -262,7 +262,7 @@ export default class GameController {
         let distX = Math.abs(serverX - x)
         let distY = Math.abs(serverY - y)
 
-        tanks[i].health -=  (distX + distY)
+        tanks[i].health -=  radius - (distX + distY)
       }
     }
 
