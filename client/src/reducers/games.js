@@ -33,6 +33,7 @@ export default (state = null, {type, payload}) => {
         ...state,
         [payload.id]: 
           {...state[payload.id], 
+            layerId: payload.layerId,
             keyPressed: payload.keyPressed, 
             keyReleased: payload.keyReleased
           }

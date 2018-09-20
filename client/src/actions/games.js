@@ -85,7 +85,7 @@ export const updateGame = (gameId, board) => (dispatch, getState) => {
     .catch(err => console.error(err))
 }
 
-export const hasPressed = (gameId, key) => (dispatch, getState) => {
+export const hasPressed = (gameId, layerId, key) => (dispatch, getState) => {
   const state = getState()
   const jwt = state.currentUser.jwt
 
@@ -94,11 +94,11 @@ export const hasPressed = (gameId, key) => (dispatch, getState) => {
   request
     .patch(`${baseUrl}/games/${gameId}/pressed`)
     .set('Authorization', `Bearer ${jwt}`)
-    .send({ key })
+    .send({ key, layerId })
     .catch(err => console.error(err))
 }
 
-export const hasReleased = (gameId, key) => (dispatch, getState) => {
+export const hasReleased = (gameId, layerId, key) => (dispatch, getState) => {
   const state = getState()
   const jwt = state.currentUser.jwt
 
@@ -107,7 +107,7 @@ export const hasReleased = (gameId, key) => (dispatch, getState) => {
   request
     .patch(`${baseUrl}/games/${gameId}/pressed`)
     .set('Authorization', `Bearer ${jwt}`)
-    .send({ key, keyReleased: true})
+    .send({ key, layerId, keyReleased: true})
     .catch(err => console.error(err))
 }
 
