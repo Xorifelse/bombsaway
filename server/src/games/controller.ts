@@ -263,6 +263,11 @@ export default class GameController {
         let distY = Math.abs(serverY - y)
 
         tanks[i].health -=  (distX + distY)
+        // if (tanks[i].health <= 0) {
+        //   game.winner = tanks.filter(tank => tank.id !== tanks[i].id).id
+        //   game.status = 'finished'
+        //   await game.save()
+        // }
       }
     }
 
