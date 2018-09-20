@@ -94,6 +94,9 @@ class LayerFG extends React.PureComponent {
             clearInterval(update)
             explosions.length = 0 // dirty way to remove element from array, multiple explosions requires this to change.
             this.setState({ explosions: [...explosions]})
+            if (this.props.local) {
+              this.props.hasHit(this.props.game.id, x, y, radius)
+            }
           }
         }
         circle.radius
@@ -156,9 +159,7 @@ class LayerFG extends React.PureComponent {
 
         // Explode projectile?
         if(this.props.game.settings.heightMap[Math.round(x)] <= y){
-          if (this.props.local) {
-            this.props.hasHit(this.props.game.id)
-          }
+
           this.createExplosion(x,y, 50)
           return clearInterval(update)
         }
