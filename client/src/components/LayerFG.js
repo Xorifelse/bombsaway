@@ -121,7 +121,6 @@ class LayerFG extends React.PureComponent {
   }
   
   keysUpdate(keyCode){
-    if(!this.props.local) return
     switch (keyCode) {
       case 32: // space
         return this.setState({ force: this.state.force + 1 })
@@ -168,7 +167,11 @@ class LayerFG extends React.PureComponent {
   }
 
   onKeyDown = (e) => {
-    //if(this.props.game.layerId === this.props.id ) return
+    if(this.props.turn !== this.props.id){
+      console.log('Not yours to update layer: ' + this.props.name)
+      return
+    }
+    
     let keyCode = Number(e.keyCode)
 
     KB_CODES.forEach(code => {
