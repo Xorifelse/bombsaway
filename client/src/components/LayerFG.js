@@ -170,27 +170,37 @@ class LayerFG extends React.PureComponent {
   keysUpdate(keyCode){
     switch (keyCode) {
       case 32: // space
+        console.log('space')
         return this.setState({ force: this.state.force + 1 })
       case 37: // left
         // counter clock
-        if (this.state.degrees === 181) return
+        console.log('left')
+        if (this.state.degrees === 181) return // dirty fix
         return this.setState({ degrees: this.state.degrees - 1 < 0 ? 359 : this.state.degrees - 1 })
       case 38: // up
         // clockwise
+        console.log('up')
         if (calcDegrees(this.state.degrees, 5) > 0 && calcDegrees(this.state.degrees, 5) < 180) return
         return this.setState({ degrees: calcDegrees(this.state.degrees, 5) })
       case 39: // right
         // clockwise
-        if (this.state.degrees === 359) return
+        console.log('right')
+        if (this.state.degrees === 359) return // dirty fix
         return this.setState({ degrees: this.state.degrees + 1 > 360 ? 1 : this.state.degrees + 1 })
       case 40: // down
         // counter clock
+        console.log('down')
         if (this.state.degrees - 5 <= 181) return
         return this.setState({ degrees: calcDegrees(this.state.degrees, -5) })
     }
   }
 
   onKeyUp = (e) => {
+    if(this.props.turn !== this.props.id){
+      console.log('Not yours to update layer: ' + this.props.name)
+      return
+    }
+
     let keyCode = Number(e.keyCode)
 
     KB_CODES.forEach(code => {
@@ -222,7 +232,7 @@ class LayerFG extends React.PureComponent {
 
     KB_CODES.forEach(code => {
       if(code === keyCode){
-        if(!this.state.keys[keyCode]){
+        if(this.state.keys[keyCode] === false){
           // create timer for keycode that stops on key released
           this.props.hasPressed(this.props.game.id, this.props.id, keyCode)
           this.state.keys[keyCode] = true
@@ -255,13 +265,18 @@ class LayerFG extends React.PureComponent {
     // Peter -> check prevProps or prevState first to see what prop has changed!
     // return immidiatly on action!
 
-    if(prevProps.game.keyPressed !== 32 && !this.props.game.keyReleased){
-      return this.onKeyDown({ keyCode: this.props.game.keyPressed })
+    //if() return // skip spacebar event, only for local client
+
+    if(!this.props.local){
+      if(this.props.game.keyPressed !== 32 && this.props.game.keyReleased === false){
+        return this.onKeyDown({ keyCode: this.props.game.keyPressed })
+      }
+  
+      if(this.props.game.keyPressed !== 32 && this.props.game.keyReleased === true){
+        return this.onKeyUp({ keyCode: this.props.game.keyPressed })
+      }
     }
 
-    if(prevProps.game.keyPressed !== 32 && this.props.game.keyReleased){
-      return this.onKeyUp({ keyCode: this.props.game.keyPressed })
-    }
 
     if (prevProps.game.hasFired !== this.props.game.hasFired) {
       this.props.switchFired(this.props.game.id)
