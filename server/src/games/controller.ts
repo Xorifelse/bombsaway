@@ -8,7 +8,7 @@ import { Game, Player } from './entities'
 // import { Validate } from 'class-validator'
 import {io} from '../index'
 
-import {genHeightmap} from '../lib/canvas'
+import {genHeightmap, getRndInt} from '../lib/canvas'
 
 import {
   CANVAS_HEIGHT,
@@ -45,9 +45,13 @@ export default class GameController {
     const tanks: Tank[] = []
     let heightMap = genHeightmap(CANVAS_WIDTH, CANVAS_HEIGHT)
 
+    let startx = [
+      getRndInt(50, CANVAS_WIDTH / 2 - 50),
+      getRndInt((CANVAS_WIDTH / 2 + 50), CANVAS_WIDTH - 50)
+    ]
+
     for(let i = 0; i < PLAYER_COUNT; i++){
-      let x = Math.round(PLAYER_START_X[i])
-      console.log(PLAYER_ID[i])
+      let x = startx[i]
       tanks.push({
         id: PLAYER_ID[i],
         x, 
