@@ -9,6 +9,7 @@ import './Game.css'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import Typography from '@material-ui/core/Typography'
+import Grid from '@material-ui/core/Grid'
 
 import {
   CANVAS_HEIGHT,
@@ -60,37 +61,58 @@ class Game extends React.PureComponent {
     
 
     return (
-      <div>
-        <Card className="info-card" style={{backgroundColor: playerColor}}>
-          <CardContent className="info-card-content">
-            <Typography variant="display2">Game {game.id}</Typography>
+      <Grid container direction="column" justify="center" alignItems="center">
+      <Grid item>
+        <Grid container direction="row" justify="center" alignItems="center">
+          <Grid item>
+            <Card className="info-card" style={{backgroundColor: playerColor}}>
+              <CardContent className="info-card-content">
+                <Typography variant="display2">Game {game.id}</Typography>
 
-            <Typography variant="title">Status: {game.status} {playerText}</Typography>
+                <Typography variant="title">Status: {game.status} {playerText}</Typography>
 
-            {
-              game.status === 'started' &&
-              player && player.symbol === game.turn &&
-              <Typography variant="title">It's your turn! </Typography>
-              
+                {
+                  game.status === 'started' &&
+                  player && player.symbol === game.turn &&
+                  <Typography variant="title">It's your turn! </Typography>
+                  
 
-            } 
+                } 
 
-            {
-              game.status === 'pending' &&
-              game.players.map(p => p.userId).indexOf(userId) === -1 &&
-              <button onClick={this.joinGame}>Join Game</button>
-            }
+                {
+                  game.status === 'pending' &&
+                  game.players.map(p => p.userId).indexOf(userId) === -1 &&
+                  <button onClick={this.joinGame}>Join Game</button>
+                }
 
-            {
-              winner &&
-              <p>Winner: {users[winner].firstName}</p>
-            }
-          </CardContent>
-        </Card>
-        <hr />
+                {
+                  winner &&
+                  <p>Winner: {users[winner].firstName}</p>
+                }
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item>
+            <Card className="info-card" style={{backgroundColor: playerColor}}>
+              <CardContent className="info-card-content">
+                <Typography variant="caption">
+                  Use your arrow key to move your tank's barrel: 
+                </Typography>
+                <Typography>
+                  UP and DOWN for fast, LEFT and RIGHT for fine tuning
+                </Typography>
+                <Typography>
+                  Press SPACE bar to increase your Force - the power with which you shoot. 
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+        </Grid>
 
         {
           game.status !== 'pending' &&
+          <Grid item>
           <Stage width={CANVAS_WIDTH} height={CANVAS_HEIGHT}>
           <Layer>
             <LayerBG winner={winner}/>
@@ -106,9 +128,10 @@ class Game extends React.PureComponent {
             }
           </Layer>
         </Stage>
+        </Grid>
         }
 
-      </div>
+      </Grid>
 
     )
   }

@@ -1,7 +1,7 @@
 // User constants
-export const TANK_SIZE = 10
-export const TANK_BARREL_SIZE = 22
-export const TANK_BARREL_WIDTH = 2
+export const TANK_SIZE = 15
+export const TANK_BARREL_SIZE = 44
+export const TANK_BARREL_WIDTH = 4
 export const TERRAIN_GRASS_COLOR = '#567d46'
 export const TERRAIN_GRASS_WIDTH = 10
 export const TERRAIN_DIRT_COLOR = '#402905'
