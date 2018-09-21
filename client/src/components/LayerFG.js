@@ -293,7 +293,7 @@ class LayerFG extends React.PureComponent {
 
     if (prevProps.game.hasFired !== this.props.game.hasFired) {
       this.props.switchFired(this.props.game.id)
-      if (this.props.game.degrees) {
+      if (this.props.game.degrees && !this.props.local) {
         this.setState({degrees: this.props.game.degrees})
       }
       this.fireProjectile(this.props.x, this.props.y, this.props.game.force, this.props.game.degrees)
