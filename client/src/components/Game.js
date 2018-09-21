@@ -101,7 +101,7 @@ class Game extends React.PureComponent {
           <Layer>
             {
               game.settings.tanks.map(obj => {
-                return <LayerFG key={obj.id} game={game} {...obj} local={player.symbol === obj.id} turn={game.turn} />
+                return <LayerFG key={obj.id} game={game} {...obj} local={player.symbol === obj.id} turn={game.turn} winner={winner}/>
               })
             }
           </Layer>
