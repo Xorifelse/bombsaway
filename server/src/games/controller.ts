@@ -31,8 +31,6 @@ interface Tank{
   health
 }
 
-var heightMap = null
-
 @JsonController()
 export default class GameController {
 
@@ -45,7 +43,7 @@ export default class GameController {
     const entity = await Game.create()
 
     const tanks: Tank[] = []
-    heightMap = genHeightmap(CANVAS_WIDTH, CANVAS_HEIGHT)
+    let heightMap = genHeightmap(CANVAS_WIDTH, CANVAS_HEIGHT)
 
     for(let i = 0; i < PLAYER_COUNT; i++){
       let x = Math.round(PLAYER_START_X[i])
@@ -214,7 +212,10 @@ export default class GameController {
      @Body() update: any
    ) {
 
-    const { x, y, radius , tanks} = update
+    let { x, y, radius , tanks} = update
+
+    x = Math.floor(x)
+    y = Math.floor(y)
 
     const game = await Game.findOneById(gameId)
     if (!game) throw new NotFoundError(`Game does not exist`)
@@ -226,19 +227,46 @@ export default class GameController {
     if (player.symbol !== game.turn) throw new BadRequestError(`It's not your turn`)
 
     game.turn = player.symbol === 'x' ? 'o' : 'x'
+
+    let heightMap = game.settings.heightMap
+
+    // edit hightmight on explosion
+    for(let i = 0; i < radius*2; i++){
+      let sub = Math.sqrt((radius*radius)-(i*i))
+      let bottom = y - sub
+      sub = sub * 2
+
+      if(x+i < game.settings.canvasWidth && bottom < heightMap[x+i]){
+        heightMap[x+i] += Math.min(sub, heightMap[x+i]-bottom)
+      }
+      if(x-i >= 0 && i != 0 && bottom < heightMap[x-i]){
+        heightMap[x-i] += Math.min(sub, heightMap[x-i]-bottom)
+      }
+    }
+    game.settings.heightMap = heightMap
+
+    // dirty update y pos
+    game.settings.tanks[0].y = Math.floor(heightMap[tanks[0].x]) 
+    game.settings.tanks[1].y = Math.floor(heightMap[tanks[1].x])
+
+    
+
     await game.save()
   
     for(let i=0; i<PLAYER_COUNT; i++){
       let serverX = PLAYER_START_X[i]
       let serverY = game.settings.heightMap[Math.round(serverX)] ///******************* */
-
-      if(between(x, serverX - radius, serverX + radius) && between(y, serverY - radius, serverY + radius)){
+      
+      if(between(x, serverX - radius, serverX + radius) && between(y, serverY - radius, serverY + radius)){ // calc in rectangle
 
         let distX = Math.abs(serverX - x)
         let distY = Math.abs(serverY - y)
+        let damage = Math.abs(radius - (distX + distY))
 
-        tanks[i].health -=  radius - (distX + distY)
+        tanks[i].health -= damage + radius
+
         if (tanks[i].health <= 0) {
+          tanks[i].health = 0
          
           game.status = 'finished'
           game.winner = tanks.filter(tank => tank.id !== tanks[i].id)[0].id
@@ -250,6 +278,7 @@ export default class GameController {
     io.emit('action', {
       type: 'HAS_HIT',
       payload: {
+        settings: game.settings,
         gameId: gameId,
         turn: game.turn,
         tanks,

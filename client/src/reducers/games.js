@@ -60,14 +60,14 @@ export default (state = null, {type, payload}) => {
       }
 
       case HAS_HIT:
-      const newSettings = {...state[payload.gameId].settings}
-      newSettings.tanks = payload.tanks
+      //const newSettings = {...state[payload.gameId].settings}
+      //newSetanksttings.tanks = payload.
         return {
           ...state,
           [payload.gameId]: 
             {...state[payload.gameId], 
               turn: payload.turn,
-              settings: newSettings,
+              settings: payload.settings,
               status: payload.gameStatus,
               winner: payload.winner
             }
