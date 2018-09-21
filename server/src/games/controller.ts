@@ -248,17 +248,18 @@ export default class GameController {
     // dirty update y pos
     game.settings.tanks[0].y = Math.floor(hm[tanks[0].x]) 
     game.settings.tanks[1].y = Math.floor(hm[tanks[1].x])
+
   
     for(let i=0; i<PLAYER_COUNT; i++){
       let serverX = PLAYER_START_X[i]
       let serverY = game.settings.heightMap[Math.round(serverX)] ///******************* */
-      
       console.log(serverY)
 
       if(serverY >= game.settings.canvasHeight){
         tanks[i].health = 0
         game.status = 'finished'
-        game.winner = tanks.filter(tank => tank.id !== tanks[i].id)[0].id
+        game.winner = game.settings.tanks.filter(tank => tank.id !== game.settings.tanks[i].id)[0].id
+        await game.save()
       } else {
         if(between(x, serverX - radius, serverX + radius) && between(y, serverY - radius, serverY + radius)){ // calc in rectangle
 
@@ -266,13 +267,14 @@ export default class GameController {
           let distY = Math.abs(serverY - y)
           let damage = Math.abs(radius - (distX + distY))
   
-          tanks[i].health -= damage + radius
-  
-          if (tanks[i].health <= 0) {
-            tanks[i].health = 0
+          game.settings.tanks[i].health -= damage + radius
+
+          if (game.settings.tanks[i].health <= 0) {
+            game.settings.tanks[i].health = 0
            
             game.status = 'finished'
-            game.winner = tanks.filter(tank => tank.id !== tanks[i].id)[0].id
+            game.winner = game.settings.tanks.filter(tank => tank.id !== game.settings.tanks[i].id)[0].id
+            await game.save()
           }
         }
       }
@@ -286,7 +288,6 @@ export default class GameController {
         settings: game.settings,
         gameId: gameId,
         turn: game.turn,
-        tanks,
         gameStatus : game.status,
         winner: game.status === 'finished' && game.winner
       }

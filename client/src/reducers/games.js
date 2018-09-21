@@ -55,7 +55,7 @@ export default (state = null, {type, payload}) => {
         ...state,
         [payload.gameId]: 
           {...state[payload.gameId], 
-            hasFired: false
+            hasFired: false,
           }
       }
 

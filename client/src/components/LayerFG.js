@@ -84,6 +84,9 @@ class LayerFG extends React.PureComponent {
             this.setState({ explosions: [...explosions]})
           } else {
             circle.expand = false
+            if (this.props.local) {
+              this.props.hasHit(this.props.game.id, x, y, radius, this.props.game.settings.tanks)
+            }
             this.setState({ explosions: [...explosions]})
           }
         } else {
@@ -94,9 +97,9 @@ class LayerFG extends React.PureComponent {
             clearInterval(update)
             explosions.length = 0 // dirty way to remove element from array, multiple explosions requires this to change.
             this.setState({ explosions: [...explosions]})
-            if (this.props.local) {
-              this.props.hasHit(this.props.game.id, x, y, radius, this.props.game.settings.tanks)
-            }
+            // if (this.props.local) {
+            //   this.props.hasHit(this.props.game.id, x, y, radius, this.props.game.settings.tanks)
+            // }
           }
         }
         circle.radius
@@ -249,8 +252,8 @@ class LayerFG extends React.PureComponent {
   }
 
   componentWillUnmount(){
-    window.removeEventListener('keydown', () => this.onKeyDown)
-    window.removeEventListener('keyup', () => this.onKeyUp)
+    window.removeEventListener('keydown', this.onKeyDown)
+    window.removeEventListener('keyup', this.onKeyUp)
 
     KB_CODES.map(code => clearInterval(this.state.keysCycle[code]))
   }
@@ -270,14 +273,15 @@ class LayerFG extends React.PureComponent {
   componentDidUpdate(prevProps, prevState){
     // Peter -> check prevProps or prevState first to see what prop has changed!
     // return immidiatly on action!
-    if (this.props.game.winner !== prevProps.game.winner && this.props.game.winner !== null) {
+    if (this.props.winner !== prevProps.winner && this.props.winner !== null) {
       console.log('there is a winner')
-      window.removeEventListener('keydown', () => this.onKeyDown)
-      window.removeEventListener('keyup', () => this.onKeyUp)
+      window.removeEventListener('keydown', this.onKeyDown)
+      window.removeEventListener('keyup', this.onKeyUp)
     }
 
     if(!this.props.local){
       if(this.props.game.keyPressed !== 32 && this.props.game.keyReleased === false){
+
         return this.onKeyDown({ keyCode: this.props.game.keyPressed })
       }
   
@@ -289,8 +293,10 @@ class LayerFG extends React.PureComponent {
 
     if (prevProps.game.hasFired !== this.props.game.hasFired) {
       this.props.switchFired(this.props.game.id)
-
-        this.fireProjectile(this.props.x, this.props.y, this.props.game.force, this.props.game.degrees)
+      if (this.props.game.degrees && !this.props.local) {
+        this.setState({degrees: this.props.game.degrees})
+      }
+      this.fireProjectile(this.props.x, this.props.y, this.props.game.force, this.props.game.degrees)
     }
 
   }
