@@ -251,7 +251,7 @@ export default class GameController {
 
     
 
-    await game.save()
+
   
     for(let i=0; i<PLAYER_COUNT; i++){
       let serverX = PLAYER_START_X[i]
@@ -263,17 +263,19 @@ export default class GameController {
         let distY = Math.abs(serverY - y)
         let damage = Math.abs(radius - (distX + distY))
 
-        tanks[i].health -= damage + radius
+        game.settings.tanks[i].health -= damage + radius
 
-        if (tanks[i].health <= 0) {
-          tanks[i].health = 0
+        if (game.settings.tanks[i].health <= 0) {
+          game.settings.tanks[i].health = 0
          
           game.status = 'finished'
-          game.winner = tanks.filter(tank => tank.id !== tanks[i].id)[0].id
+          game.winner = game.settings.tanks.filter(tank => tank.id !== game.settings.tanks[i].id)[0].id
           await game.save()
         }
       }
     }
+
+    await game.save()
 
     io.emit('action', {
       type: 'HAS_HIT',
@@ -281,7 +283,6 @@ export default class GameController {
         settings: game.settings,
         gameId: gameId,
         turn: game.turn,
-        tanks,
         gameStatus : game.status,
         winner: game.status === 'finished' && game.winner
       }
