@@ -61,7 +61,8 @@ class Game extends React.PureComponent {
     
 
     return (
-      <div>
+      <Grid container direction="column" justify="center" alignItems="center">
+      <Grid item>
         <Grid container direction="row" justify="center" alignItems="center">
           <Grid item>
             <Card className="info-card" style={{backgroundColor: playerColor}}>
@@ -94,15 +95,24 @@ class Game extends React.PureComponent {
           <Grid item>
             <Card className="info-card" style={{backgroundColor: playerColor}}>
               <CardContent className="info-card-content">
-
+                <Typography variant="caption">
+                  Use your arrow key to move your tank's barrel: 
+                </Typography>
+                <Typography>
+                  UP and DOWN for fast, LEFT and RIGHT for fine tuning
+                </Typography>
+                <Typography>
+                  Press SPACE bar to increase your Force - the power with which you shoot. 
+                </Typography>
               </CardContent>
             </Card>
           </Grid>
         </Grid>
-        <hr />
+        </Grid>
 
         {
           game.status !== 'pending' &&
+          <Grid item>
           <Stage width={CANVAS_WIDTH} height={CANVAS_HEIGHT}>
           <Layer>
             <LayerBG winner={winner}/>
@@ -118,9 +128,10 @@ class Game extends React.PureComponent {
             }
           </Layer>
         </Stage>
+        </Grid>
         }
 
-      </div>
+      </Grid>
 
     )
   }

@@ -1,7 +1,7 @@
 .info-card {
-  margin: auto;
+  margin-right: 15px;
   width: 400px;
-  height: 150px;
+  height: 120px;
 }
 
 .info-card-content {
