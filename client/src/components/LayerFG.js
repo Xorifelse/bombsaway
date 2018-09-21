@@ -84,6 +84,9 @@ class LayerFG extends React.PureComponent {
             this.setState({ explosions: [...explosions]})
           } else {
             circle.expand = false
+            if (this.props.local) {
+              this.props.hasHit(this.props.game.id, x, y, radius, this.props.game.settings.tanks)
+            }
             this.setState({ explosions: [...explosions]})
           }
         } else {
@@ -94,9 +97,9 @@ class LayerFG extends React.PureComponent {
             clearInterval(update)
             explosions.length = 0 // dirty way to remove element from array, multiple explosions requires this to change.
             this.setState({ explosions: [...explosions]})
-            if (this.props.local) {
-              this.props.hasHit(this.props.game.id, x, y, radius, this.props.game.settings.tanks)
-            }
+            // if (this.props.local) {
+            //   this.props.hasHit(this.props.game.id, x, y, radius, this.props.game.settings.tanks)
+            // }
           }
         }
         circle.radius
