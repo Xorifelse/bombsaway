@@ -21,13 +21,20 @@ class LayerTerrain extends React.PureComponent {
     })
   }
 
+  componentDidUpdate(prevProps, prevState){
+    if(prevProps.game.settings.heightMap !== this.props.game.settings.heightMap){
+      this.setState({
+        points: getLineCoords(this.props.game.settings.canvasWidth, this.props.game.settings.canvasHeight, this.props.game.settings.heightMap)
+      })
+    }    
+  }
+
   render() {
     return <Line points={this.state.points} stroke={TERRAIN_GRASS_COLOR} fill={TERRAIN_DIRT_COLOR} closed={true} tension={0.5} strokeWidth={TERRAIN_GRASS_WIDTH} />
   }
 }
 
 const mapStateToProps = (state, props) => ({
-  
 })
 
 export default connect(mapStateToProps, {})(LayerTerrain)
