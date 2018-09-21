@@ -266,6 +266,7 @@ export default class GameController {
         if (tanks[i].health <= 0) {
          
           game.status = 'finished'
+          game.winner = tanks.filter(tank => tank.id !== tanks[i].id)[0].id
           await game.save()
         }
       }
@@ -277,7 +278,8 @@ export default class GameController {
         gameId: gameId,
         turn: game.turn,
         tanks,
-        gameStatus : game.status
+        gameStatus : game.status,
+        winner: game.status === 'finished' && game.winner
       }
     })
   

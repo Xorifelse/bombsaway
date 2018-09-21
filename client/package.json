@@ -20,6 +20,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "local": "REACT_APP_API_URL=http://172.89.x.x react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"

@@ -9,9 +9,12 @@ import './App.css'
 import TopBar from './components/layout/TopBar'
 import Game from './components/Game';
 
+import {baseUrl} from './constants'
+
 
 class App extends Component {
   render() {
+    console.log(`Api base url: ${baseUrl}`)
     return (
       <Router>
         <div className="App">
