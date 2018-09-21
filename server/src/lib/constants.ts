@@ -1,3 +1,5 @@
+import {getRndInt} from './canvas'
+
 export const CANVAS_HEIGHT = 700
 export const CANVAS_WIDTH = 1400
 
@@ -38,8 +40,8 @@ export const PLAYER_ID = [
 ]
 
 export const PLAYER_START_X = [
-  CANVAS_WIDTH / 2 / 2,
-  (CANVAS_WIDTH / 2) + (CANVAS_WIDTH / 2) / 2
+  getRndInt(50, CANVAS_WIDTH / 2 - 50),
+  getRndInt((CANVAS_WIDTH / 2 + 50), CANVAS_WIDTH - 50)
 ]
 
 export const between = (n, min, max) => n >= min && n <= max
