@@ -249,8 +249,8 @@ class LayerFG extends React.PureComponent {
   }
 
   componentWillUnmount(){
-    window.removeEventListener('keydown', () => this.onKeyDown)
-    window.removeEventListener('keyup', () => this.onKeyUp)
+    window.removeEventListener('keydown', this.onKeyDown)
+    window.removeEventListener('keyup', this.onKeyUp)
 
     KB_CODES.map(code => clearInterval(this.state.keysCycle[code]))
   }
@@ -270,10 +270,10 @@ class LayerFG extends React.PureComponent {
   componentDidUpdate(prevProps, prevState){
     // Peter -> check prevProps or prevState first to see what prop has changed!
     // return immidiatly on action!
-    if (this.props.game.winner !== prevProps.game.winner && this.props.game.winner !== null) {
+    if (this.props.winner !== prevProps.winner && this.props.winner !== null) {
       console.log('there is a winner')
-      window.removeEventListener('keydown', () => this.onKeyDown)
-      window.removeEventListener('keyup', () => this.onKeyUp)
+      window.removeEventListener('keydown', this.onKeyDown)
+      window.removeEventListener('keyup', this.onKeyUp)
     }
 
     if(!this.props.local){
