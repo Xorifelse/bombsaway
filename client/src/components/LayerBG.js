@@ -57,7 +57,17 @@ class LayerBG extends React.PureComponent {
       <Group>
         <Rect x={0} y={0} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} fill={bgColor} />
         <Star x={polarProjectionX(this.state.centerX, this.state.offsetX, this.state.degrees)} y={polarProjectionY(this.state.centerY, this.state.offsetY, this.state.degrees)} numPoints={15} innerRadius={70} outerRadius={70} fill="yellow" stroke="white" />
-        {/* <Star x={polarProjectionX(this.state.centerX, this.state.offsetX, this.state.degrees)} y={polarProjectionY(this.state.centerY, this.state.offsetY, this.state.degrees)} numPoints={15} innerRadius={70} outerRadius={70} fill="white" stroke="white" /> */}
+        <Star x={polarProjectionX(this.state.centerX, this.state.offsetX, calcDegrees(this.state.degrees, 180))} y={polarProjectionY(this.state.centerY, this.state.offsetY, calcDegrees(this.state.degrees, 180))} numPoints={15} innerRadius={70} outerRadius={70} fill="white" stroke="white" />
+
+
+/////
+
+
+
+
+
+
+
       </Group>
     )
   }
