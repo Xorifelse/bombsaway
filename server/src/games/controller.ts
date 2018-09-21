@@ -228,52 +228,57 @@ export default class GameController {
 
     game.turn = player.symbol === 'x' ? 'o' : 'x'
 
-    let heightMap = game.settings.heightMap
+    let hm = game.settings.heightMap
 
     // edit hightmight on explosion
-    for(let i = 0; i < radius*2; i++){
+    radius = radius + radius / 4
+    for(let i = 0; i < radius; i++){
       let sub = Math.sqrt((radius*radius)-(i*i))
       let bottom = y - sub
-      sub = sub * 2
 
-      if(x+i < game.settings.canvasWidth && bottom < heightMap[x+i]){
-        heightMap[x+i] += Math.min(sub, heightMap[x+i]-bottom)
+      if(x+i < game.settings.canvasWidth && bottom < hm[x+i]){
+        hm[x+i] += Math.min(sub*2, hm[x+i]-bottom)
       }
-      if(x-i >= 0 && i != 0 && bottom < heightMap[x-i]){
-        heightMap[x-i] += Math.min(sub, heightMap[x-i]-bottom)
+      if(x-i >= 0 && i != 0 && bottom < hm[x-i]){
+        hm[x-i] += Math.min(sub*2, hm[x-i]-bottom)
       }
     }
-    game.settings.heightMap = heightMap
+    game.settings.hm = hm
 
     // dirty update y pos
-    game.settings.tanks[0].y = Math.floor(heightMap[tanks[0].x]) 
-    game.settings.tanks[1].y = Math.floor(heightMap[tanks[1].x])
-
-    
-
-    await game.save()
+    game.settings.tanks[0].y = Math.floor(hm[tanks[0].x]) 
+    game.settings.tanks[1].y = Math.floor(hm[tanks[1].x])
   
     for(let i=0; i<PLAYER_COUNT; i++){
       let serverX = PLAYER_START_X[i]
       let serverY = game.settings.heightMap[Math.round(serverX)] ///******************* */
       
-      if(between(x, serverX - radius, serverX + radius) && between(y, serverY - radius, serverY + radius)){ // calc in rectangle
+      console.log(serverY)
 
-        let distX = Math.abs(serverX - x)
-        let distY = Math.abs(serverY - y)
-        let damage = Math.abs(radius - (distX + distY))
+      if(serverY >= game.settings.canvasHeight){
+        tanks[i].health = 0
+        game.status = 'finished'
+        game.winner = tanks.filter(tank => tank.id !== tanks[i].id)[0].id
+      } else {
+        if(between(x, serverX - radius, serverX + radius) && between(y, serverY - radius, serverY + radius)){ // calc in rectangle
 
-        tanks[i].health -= damage + radius
-
-        if (tanks[i].health <= 0) {
-          tanks[i].health = 0
-         
-          game.status = 'finished'
-          game.winner = tanks.filter(tank => tank.id !== tanks[i].id)[0].id
-          await game.save()
+          let distX = Math.abs(serverX - x)
+          let distY = Math.abs(serverY - y)
+          let damage = Math.abs(radius - (distX + distY))
+  
+          tanks[i].health -= damage + radius
+  
+          if (tanks[i].health <= 0) {
+            tanks[i].health = 0
+           
+            game.status = 'finished'
+            game.winner = tanks.filter(tank => tank.id !== tanks[i].id)[0].id
+          }
         }
       }
     }
+
+    await game.save()
 
     io.emit('action', {
       type: 'HAS_HIT',
