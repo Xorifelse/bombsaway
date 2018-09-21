@@ -270,6 +270,11 @@ class LayerFG extends React.PureComponent {
   componentDidUpdate(prevProps, prevState){
     // Peter -> check prevProps or prevState first to see what prop has changed!
     // return immidiatly on action!
+    if (this.props.game.winner !== prevProps.game.winner && this.props.game.winner !== null) {
+      console.log('there is a winner')
+      window.removeEventListener('keydown', () => this.onKeyDown)
+      window.removeEventListener('keyup', () => this.onKeyUp)
+    }
 
     if(!this.props.local){
       if(this.props.game.keyPressed !== 32 && this.props.game.keyReleased === false){
