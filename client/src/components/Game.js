@@ -93,7 +93,7 @@ class Game extends React.PureComponent {
           game.status !== 'pending' &&
           <Stage width={CANVAS_WIDTH} height={CANVAS_HEIGHT}>
           <Layer>
-            <LayerBG />
+            <LayerBG winner={winner}/>
           </Layer>
           <Layer>
             <LayerTerrain game={game}/>

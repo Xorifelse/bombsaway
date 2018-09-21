@@ -45,11 +45,11 @@ class LayerBG extends React.PureComponent {
     clearInterval(this.state.timer)
   }
 
-  makeNegative(number) {
-    if (number > 0) {
-        number = -number;
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.winner !== prevProps.winner && this.props.winner !== null) {
+      clearInterval(this.state.timer)
     }
-}
+  }
 
   render() {
     const bgColor = `rgb(${this.state.backgroundColor.r}, ${this.state.backgroundColor.g},${this.state.backgroundColor.b})`

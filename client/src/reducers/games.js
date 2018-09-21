@@ -68,7 +68,8 @@ export default (state = null, {type, payload}) => {
             {...state[payload.gameId], 
               turn: payload.turn,
               settings: newSettings,
-              status: payload.gameStatus
+              status: payload.gameStatus,
+              winner: payload.winner
             }
         }
 

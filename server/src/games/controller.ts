@@ -31,7 +31,7 @@ interface Tank{
   health
 }
 
-const heightMap = genHeightmap(CANVAS_WIDTH, CANVAS_HEIGHT)
+var heightMap = null
 
 @JsonController()
 export default class GameController {
@@ -45,7 +45,7 @@ export default class GameController {
     const entity = await Game.create()
 
     const tanks: Tank[] = []
-    
+    heightMap = genHeightmap(CANVAS_WIDTH, CANVAS_HEIGHT)
 
     for(let i = 0; i < PLAYER_COUNT; i++){
       let x = Math.round(PLAYER_START_X[i])
@@ -127,27 +127,6 @@ export default class GameController {
     const game = await Game.findOneById(gameId)
     if (!game) throw new NotFoundError(`Game does not exist`)
 
-    // const player = await Player.findOne({ user, game })
-
-    // if (!player) throw new ForbiddenError(`You are not part of this game`)
-    // if (game.status !== 'started') throw new BadRequestError(`The game is not started yet`)
-    // if (player.symbol !== game.turn) throw new BadRequestError(`It's not your turn`)
-    // if (!isValidTransition(player.symbol, game.board, update.board)) {
-    //   throw new BadRequestError(`Invalid move`)
-    // }    
-
-    // const winner = calculateWinner(update.board)
-    // if (winner) {
-    //   game.winner = winner
-    //   game.status = 'finished'
-    // }
-    // else if (finished(update.board)) {
-    //   game.status = 'finished'
-    // }
-    // else {
-    //   game.turn = player.symbol === 'x' ? 'o' : 'x'
-    // }
-    // game.board = update.board
     await game.save()
     
     io.emit('action', {
@@ -237,10 +216,6 @@ export default class GameController {
 
     const { x, y, radius , tanks} = update
 
-    // const tankNewColor = (x, y, radius) => {
-    //   return `rgb(${PLAYER_COLORS[tankIdHit].r-50}, ${PLAYER_COLORS[tankIdHit].g}, ${PLAYER_COLORS[tankIdHit].b})`
-    // }
-
     const game = await Game.findOneById(gameId)
     if (!game) throw new NotFoundError(`Game does not exist`)
 
@@ -255,7 +230,7 @@ export default class GameController {
   
     for(let i=0; i<PLAYER_COUNT; i++){
       let serverX = PLAYER_START_X[i]
-      let serverY = heightMap[Math.round(serverX)]
+      let serverY = game.settings.heightMap[Math.round(serverX)] ///******************* */
 
       if(between(x, serverX - radius, serverX + radius) && between(y, serverY - radius, serverY + radius)){
 
@@ -266,6 +241,7 @@ export default class GameController {
         if (tanks[i].health <= 0) {
          
           game.status = 'finished'
+          game.winner = tanks.filter(tank => tank.id !== tanks[i].id)[0].id
           await game.save()
         }
       }
@@ -277,7 +253,8 @@ export default class GameController {
         gameId: gameId,
         turn: game.turn,
         tanks,
-        gameStatus : game.status
+        gameStatus : game.status,
+        winner: game.status === 'finished' && game.winner
       }
     })
   
